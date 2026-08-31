@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="doc-title">Kuis Interaktif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#10161d;
+    --bg-grid: rgba(201,162,39,0.07);
+    --panel:#161f28;
+    --panel-2:#1c2731;
+    --gold:#c9a227;
+    --gold-dim: rgba(201,162,39,0.35);
+    --teal:#4fa598;
+    --rose:#c1573f;
+    --text:#f1ecdd;
+    --text-dim:#93a3b0;
+    --line: rgba(241,236,221,0.10);
+    --line-strong: rgba(241,236,221,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--bg-grid) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px) 0 0/40px 40px,
+      var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:48px 20px;
+  }
+  .wrap{width:100%; max-width:800px;}
+  h1,h2,h3{font-family:'Fraunces', serif; font-weight:600; margin:0;}
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--gold); margin:0 0 10px;
+  }
+  .btn{
+    font-family:'IBM Plex Sans', sans-serif; font-size:15px; font-weight:500;
+    color:var(--bg); background:var(--gold); border:none; border-radius:2px;
+    padding:14px 28px; cursor:pointer; transition: transform .12s ease, background .12s ease;
+  }
+  .btn:hover{background:#dcb42f;}
+  .btn:active{transform:scale(0.98);}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn-ghost{background:transparent; color:var(--text); border:1px solid var(--line-strong);}
+  .btn-ghost:hover{background:var(--panel-2); border-color:var(--gold-dim);}
+  .btn-danger{background:transparent; color:var(--rose); border:1px solid rgba(193,87,63,0.4);}
+  .btn-danger:hover{background:rgba(193,87,63,0.1);}
+  .btn-sm{padding:8px 14px; font-size:13px;}
+
+  .link-btn{
+    background:none; border:none; color:var(--text-dim); font-family:'IBM Plex Mono', monospace;
+    font-size:12px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;
+  }
+  .link-btn:hover{color:var(--gold);}
+
+  /* START SCREEN */
+  #screen-start{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:56px 48px; text-align:center;}
+  .spiral{margin:0 auto 28px; display:block;}
+  #screen-start h1{font-size:32px; line-height:1.25; margin-bottom:14px;}
+  #screen-start p.sub{color:var(--text-dim); font-size:15px; line-height:1.65; max-width:480px; margin:0 auto 32px;}
+  .meta-row{
+    display:flex; justify-content:center; gap:32px; font-family:'IBM Plex Mono', monospace;
+    font-size:13px; color:var(--text-dim); margin-bottom:36px; flex-wrap:wrap;
+  }
+  .meta-row span b{color:var(--gold); font-weight:500;}
+  .id-form{display:flex; gap:12px; max-width:500px; margin:0 auto 12px; flex-wrap:wrap;}
+  .id-field{flex:1; min-width:200px; text-align:left;}
+  .id-field label{
+    display:block; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--text-dim); margin-bottom:6px;
+  }
+  .id-field input, .id-field select {
+    width:100%; background:var(--panel-2); border:1px solid var(--line-strong); border-radius:2px;
+    color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:15px; padding:11px 12px;
+  }
+  .id-field input:focus, .id-field select:focus {outline:none; border-color:var(--gold-dim);}
+  .id-error{color:var(--rose); font-size:13px; font-family:'IBM Plex Mono', monospace; height:18px; margin:0 0 20px; text-align:center;}
+  .admin-entry{margin-top:28px; padding-top:20px; border-top:1px solid var(--line);}
+
+  /* RULER PROGRESS */
+  .ruler{position:relative; height:34px; margin-bottom:28px;}
+  .ruler-track{position:absolute; top:16px; left:0; right:0; height:1px; background:var(--line-strong);}
+  .ruler-fill{position:absolute; top:16px; left:0; height:1px; background:var(--gold); transition:width .3s ease;}
+  .ruler-ticks{position:absolute; top:0; left:0; right:0; height:34px; display:flex; justify-content:space-between;}
+  .tick{width:1px; background:var(--line); height:8px; margin-top:12px;}
+  .ruler-head{
+    position:absolute; top:0; width:30px; height:30px; margin-left:-15px; background:var(--gold);
+    color:var(--bg); border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; transition:left .3s ease;
+  }
+
+  .quiz-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; flex-wrap:wrap; gap:6px;}
+  .qnum{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim);}
+  .qcat{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--teal); border:1px solid rgba(79,165,152,0.35); border-radius:2px; padding:3px 8px;
+  }
+  
+  /* TIMER STYLES */
+  .timer-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim);
+    margin-left: auto; margin-right: 12px;
+  }
+  .timer-badge b{color:var(--teal); transition: color 0.3s ease; font-size:14px;}
+  .timer-badge.warning b{color:var(--rose); animation: blink 1s infinite;}
+  @keyframes blink { 50% { opacity: 0.5; } }
+
+  .score-badge{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim);}
+  .score-badge b{color:var(--gold);}
+
+  /* QUESTION CARD */
+  #screen-quiz .card{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:32px 32px 24px; margin-bottom:24px;}
+  .qimg{width:100%; max-height:320px; object-fit:contain; border-radius:3px; margin-bottom:20px; background:var(--panel-2); display:block;}
+  .qtext{font-family:'Fraunces', serif; font-size:20px; line-height:1.5; font-weight:500; margin:0 0 24px;}
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .opt{
+    display:flex; align-items:flex-start; gap:14px; padding:14px 16px; border:1px solid var(--line-strong);
+    border-radius:3px; cursor:pointer; text-align:left; background:transparent; color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; font-size:15px; line-height:1.5;
+    transition: border-color .12s ease, background .12s ease; width:100%;
+  }
+  .opt:hover:not(.locked){border-color:var(--gold-dim); background:var(--panel-2);}
+  .opt .letter{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; width:22px; height:22px;
+    min-width:22px; border-radius:50%; border:1px solid var(--line-strong); display:flex;
+    align-items:center; justify-content:center; color:var(--text-dim);
+  }
+  .opt.correct{border-color:var(--teal); background:rgba(79,165,152,0.10);}
+  .opt.correct .letter{border-color:var(--teal); color:var(--teal); background:rgba(79,165,152,0.15);}
+  .opt.wrong{border-color:var(--rose); background:rgba(193,87,63,0.10);}
+  .opt.wrong .letter{border-color:var(--rose); color:var(--rose); background:rgba(193,87,63,0.15);}
+  .opt.dim{opacity:0.45;}
+
+  /* ESSAY ANSWER BOX */
+  .essay-box{display:flex; flex-direction:column; gap:12px;}
+  .essay-textarea{
+    width:100%; min-height:160px; background:var(--panel-2); border:1px solid var(--line-strong); border-radius:3px;
+    color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:15px; line-height:1.6; padding:14px 16px; resize:vertical;
+  }
+  .essay-textarea:focus{outline:none; border-color:var(--gold-dim);}
+  .essay-textarea:disabled{opacity:0.7;}
+  .essay-hint{font-size:12px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace;}
+  .essay-feedback{padding:14px 16px; border-radius:3px; border:1px solid var(--line-strong); background:var(--panel-2); font-size:13px; color:var(--text-dim);}
+  .essay-feedback b{color:var(--gold);}
+
+  .quiz-footer{display:flex; justify-content:flex-end;}
+  .quiz-footer .btn{opacity:0; pointer-events:none; transition:opacity .15s ease;}
+  .quiz-footer .btn.show{opacity:1; pointer-events:auto;}
+
+  /* RESULT SCREEN */
+  #screen-result .card{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:40px;}
+  .score-hero{text-align:center; padding-bottom:28px; border-bottom:1px solid var(--line); margin-bottom:28px;}
+  .score-hero .big{font-family:'IBM Plex Mono', monospace; font-size:56px; font-weight:600; color:var(--gold); line-height:1;}
+  .score-hero .pct{color:var(--text-dim); font-size:14px; margin-top:8px; font-family:'IBM Plex Mono', monospace;}
+  .score-hero .msg{font-family:'Fraunces', serif; font-size:19px; margin-top:16px;}
+  .student-line{text-align:center; font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim); margin-top:10px;}
+  .student-line b{color:var(--text);}
+
+  .cat-row{margin-bottom:14px;}
+  .cat-row .cat-label{display:flex; justify-content:space-between; font-size:13px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; margin-bottom:6px;}
+  .cat-bar-track{height:6px; background:var(--panel-2); border-radius:3px; overflow:hidden;}
+  .cat-bar-fill{height:100%; background:var(--teal); border-radius:3px;}
+
+  .review-toggle{margin-top:28px; text-align:center;}
+  #review-list{display:none; margin-top:20px;}
+  #review-list.show{display:block;}
+  .review-item{padding:16px 0; border-top:1px solid var(--line);}
+  .review-item .rq{font-size:14px; margin-bottom:8px; line-height:1.5;}
+  .review-item .rq b{font-family:'IBM Plex Mono', monospace; color:var(--text-dim); font-weight:500;}
+  .review-item .ra{font-size:13px; font-family:'IBM Plex Mono', monospace; margin-bottom:2px;}
+  .review-item .ra.wrong{color:var(--rose);}
+  .review-item .ra.right{color:var(--teal);}
+  .review-item .ra.timeout{color:var(--gold);}
+
+  .result-actions{display:flex; justify-content:center; gap:12px; margin-top:32px; flex-wrap:wrap;}
+  .hidden{display:none !important;}
+
+  /* MODAL (admin/guru login) */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(8,11,15,0.72); display:flex; align-items:center;
+    justify-content:center; z-index:50; padding:20px;
+  }
+  .modal-box{
+    background:var(--panel); border:1px solid var(--line-strong); border-radius:4px; padding:32px;
+    max-width:360px; width:100%; text-align:center;
+  }
+  .modal-box h3{font-size:18px; margin-bottom:8px;}
+  .modal-box p{color:var(--text-dim); font-size:13px; margin:0 0 20px;}
+  .modal-box input, .modal-box select {
+    width:100%; background:var(--panel-2); border:1px solid var(--line-strong); border-radius:2px;
+    color:var(--text); font-family:'IBM Plex Mono', monospace; font-size:15px; padding:11px 12px; margin-bottom:12px;
+  }
+  .modal-box input:focus, .modal-box select:focus {outline:none; border-color:var(--gold-dim);}
+  .modal-actions{display:flex; gap:10px; justify-content:center; margin-top:6px;}
+
+  /* PANELS */
+  #screen-admin, #screen-guru {background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:32px;}
+  .admin-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:10px;}
+  
+  .admin-nav{display:flex; gap:10px; margin-bottom:24px; border-bottom:1px solid var(--line-strong); padding-bottom:12px; flex-wrap:wrap;}
+  .nav-btn{background:transparent; border:none; color:var(--text-dim); font-size:14px; font-weight:500; cursor:pointer; padding:8px 16px; border-radius:3px;}
+  .nav-btn.active{background:var(--panel-2); color:var(--gold); border:1px solid var(--line-strong);}
+  .nav-btn:hover:not(.active){background:var(--panel-2);}
+
+  .admin-status{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); margin-bottom:20px; min-height:16px;}
+  .admin-status.ok{color:var(--teal);}
+  .admin-status.err{color:var(--rose);}
+  .admin-toolbar{display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;}
+  
+  .admin-settings-box { background: var(--panel-2); border: 1px solid var(--line-strong); border-radius: 3px; padding: 16px 20px; margin-bottom: 24px; }
+  .admin-settings-box label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .admin-settings-box input, .admin-settings-box textarea { width: 100%; background: var(--panel); border: 1px solid var(--line-strong); border-radius: 2px; color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 9px 12px; }
+  .admin-settings-box textarea { min-height: 100px; resize: vertical; }
+  .admin-settings-box input:focus, .admin-settings-box textarea:focus { outline: none; border-color: var(--gold-dim); }
+
+  /* FILTER GRID */
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    background: var(--bg);
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--line-strong);
+    margin-bottom: 16px;
+  }
+  .filter-item { display: flex; flex-direction: column; gap: 6px; }
+  .filter-item label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+  select.filter-select, input.filter-select { 
+    background: var(--panel-2); border: 1px solid var(--line-strong); color: var(--text); 
+    font-family: 'IBM Plex Mono', monospace; padding: 8px 12px; border-radius: 2px; 
+    outline: none; font-size: 13px; width: 100%; box-sizing: border-box;
+  }
+  select.filter-select:focus, input.filter-select:focus { border-color: var(--gold-dim); }
+
+  .qcard-admin{ border:1px solid var(--line-strong); border-radius:3px; padding:20px; margin-bottom:16px; background:var(--panel-2); }
+  .qcard-admin .row{display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
+  .qcard-admin .row > div{flex:1; min-width:140px;}
+  .field-label{ display:block; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px; }
+  .qcard-admin input[type=text], .qcard-admin textarea, .qcard-admin select { width:100%; background:var(--panel); border:1px solid var(--line-strong); border-radius:2px; color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:14px; padding:9px 10px; }
+  .qcard-admin select {font-family:'IBM Plex Mono', monospace; font-size:13px; padding:8px;}
+  .qcard-admin textarea{resize:vertical; min-height:52px;}
+  .opt-edit-row{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
+  .opt-edit-row input[type=radio]{accent-color:var(--gold); width:16px; height:16px; flex:none;}
+  .opt-edit-row .letter-tag{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); width:16px; flex:none; }
+  .qcard-admin-footer{display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line-strong);}
+  .qcard-admin-footer .qidx{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim);}
+  
+  /* TAB LIVE PROGRESS & GURU */
+  .live-table-wrapper { width: 100%; overflow-x: auto; margin-top: 16px; }
+  .live-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+  .live-table th { font-family: 'IBM Plex Mono', monospace; color: var(--text-dim); padding: 12px; border-bottom: 1px solid var(--line-strong); font-weight: 500; white-space: nowrap; }
+  .live-table td { padding: 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .live-table tr:hover { background: var(--panel-2); }
+  .status-badge { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; }
+  .status-mengerjakan { background: rgba(201,162,39,0.15); color: var(--gold); border: 1px solid rgba(201,162,39,0.3); }
+  .status-selesai { background: rgba(79,165,152,0.15); color: var(--teal); border: 1px solid rgba(79,165,152,0.3); }
+  .token-badge { display: inline-block; background: rgba(79,165,152,0.15); color: var(--teal); border: 1px solid rgba(79,165,152,0.3); padding: 6px 12px; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600; }
+
+  /* LOADING OVERLAY */
+  .loader-overlay{ position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:100; flex-direction:column; }
+  .spinner{ width:40px; height:40px; border:3px solid var(--line-strong); border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width:520px){
+    #screen-start{padding:40px 24px;}
+    #screen-quiz .card{padding:24px 20px;}
+    #screen-admin, #screen-guru{padding:20px;}
+    .live-table-wrapper { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loader" class="loader-overlay">
+  <div class="spinner"></div>
+  <p id="loader-text" style="font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim); text-align:center;">Menghubungkan ke Database...</p>
+</div>
+
+<div class="wrap">
+  <!-- == START SCREEN == -->
+  <div id="screen-start" class="hidden">
+    <svg class="spiral" width="96" height="96" viewBox="0 0 96 96" fill="none">
+      <path d="M60 36 A24 24 0 0 1 36 60 A12 12 0 0 1 24 48 A6 6 0 0 1 30 42 A3 3 0 0 1 33 45" stroke="#c9a227" stroke-width="1.4" fill="none"/>
+      <rect x="12" y="12" width="72" height="72" rx="2" stroke="#c9a227" stroke-opacity="0.35" stroke-width="1"/>
+      <rect x="36" y="12" width="48" height="48" rx="2" stroke="#c9a227" stroke-opacity="0.35" stroke-width="1"/>
+      <rect x="36" y="36" width="24" height="24" rx="2" stroke="#c9a227" stroke-opacity="0.35" stroke-width="1"/>
+    </svg>
+    <p class="eyebrow">Kuis Interaktif</p>
+    
+    <h1 id="main-title">Memuat Judul...</h1>
+    
+    <p class="sub">Pilihan ganda dan urutan soal akan diacak otomatis. Jumlah soal yang muncul akan menyesuaikan dengan kode token yang Anda masukkan.</p>
+    <div class="meta-row">
+      <span><b id="meta-total">?</b> soal</span>
+      <span><b>A–E</b> acak otomatis</span>
+      <span id="meta-timer"><b>-</b> dtk/soal</span>
+    </div>
+    
+    <div class="id-form">
+      <div class="id-field">
+        <label for="input-nama">Nama Lengkap Siswa</label>
+        <input type="text" id="input-nama" placeholder="Contoh: Budi Santoso" autocomplete="off">
+      </div>
+      <div class="id-field">
+        <label for="input-kelas">Kelas</label>
+        <select id="input-kelas">
+          <option value="" disabled selected>-- Pilih Kelas --</option>
+          <option value="X">X</option>
+          <option value="XI">XI</option>
+          <option value="XII">XII</option>
+        </select>
+      </div>
+      <div class="id-field">
+        <label for="input-jurusan">Jurusan</label>
+        <select id="input-jurusan">
+          <option value="" disabled selected>-- Pilih Jurusan --</option>
+          <option value="TKJ">TKJ 1</option>
+		   <option value="TKJ">TKJ 2</option>
+		    <option value="TKJ">TKJ 3</option>
+          <option value="TSM">TSM</option>
+		   <option value="TSM">TSM 1</option>
+		    <option value="TSM">TSM 2</option>
+          <option value="ATP">ATP</option>
+		  <option value="ATP">ATP 1</option>
+		  <option value="ATP">ATP 2</option>
+          <option value="AK">AK</option>
+		   <option value="AK">AK 1</option>
+		    <option value="AK">AK 2</option>
+			 <option value="DKV">DKV</option>
+          <option value="BD">BD</option>
+        </select>
+      </div>
+      <div class="id-field">
+        <label for="input-token">Kode Token Ujian</label>
+        <input type="text" id="input-token" placeholder="Masukkan token" autocomplete="off">
+      </div>
+    </div>
+
+    <p class="id-error" id="id-error"></p>
+    <button class="btn" id="btn-start">Mulai kuis</button>
+    <div class="admin-entry">
+      <button class="link-btn" id="btn-guru-open">Masuk (Panel Guru)</button>
+      <span style="color:var(--text-dim); margin:0 8px;"> | </span>
+      <button class="link-btn" id="btn-admin-open">Masuk (Admin)</button>
+    </div>
+  </div>
+
+  <!-- == QUIZ SCREEN == -->
+  <div id="screen-quiz" class="hidden">
+    <div class="ruler">
+      <div class="ruler-track"></div>
+      <div class="ruler-fill" id="ruler-fill"></div>
+      <div class="ruler-ticks" id="ruler-ticks"></div>
+      <div class="ruler-head" id="ruler-head">1</div>
+    </div>
+    <div class="quiz-top">
+      <span class="qnum" id="qnum">Soal 1 / 50</span>
+      <span class="qcat" id="qcat">Mata Pelajaran</span>
+      <span class="timer-badge hidden" id="timer-badge">Sisa Waktu: <b id="timer-live">00:00</b></span>
+      <span class="score-badge">Skor <b id="score-live">0</b></span>
+    </div>
+    <div class="card">
+      <img class="qimg hidden" id="qimg" alt="Gambar soal">
+      <p class="qtext" id="qtext"></p>
+      <div class="options" id="options"></div>
+    </div>
+    <div class="quiz-footer">
+      <button class="btn" id="btn-next">Lanjut →</button>
+    </div>
+  </div>
+
+  <!-- == RESULT SCREEN == -->
+  <div id="screen-result" class="hidden">
+    <div class="card">
+      <div class="score-hero">
+        <p class="eyebrow" style="text-align:center;">Hasil kuis</p>
+        <div class="big" id="final-score">0/0</div>
+        <div class="pct" id="final-pct">0%</div>
+        <p class="msg" id="final-msg"></p>
+        <p class="student-line" id="student-line"></p>
+        <p class="student-line" id="sheet-status" style="margin-top:4px;"></p>
+      </div>
+      <div id="cat-breakdown"></div>
+      <div class="review-toggle">
+        <button class="btn btn-ghost" id="btn-review">Lihat pembahasan jawaban</button>
+      </div>
+      <div id="review-list"></div>
+      <div class="result-actions">
+        <button class="btn" id="btn-download">Unduh Hasil Sendiri (Siswa)</button>
+        <button class="btn btn-ghost" id="btn-restart">Tutup / Selesai</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- == GURU SCREEN == -->
+  <div id="screen-guru" class="hidden">
+    <div class="admin-header">
+      <h2 id="guru-panel-title">Panel Guru</h2>
+      <button class="btn btn-ghost btn-sm" id="btn-guru-back">Keluar</button>
+    </div>
+
+    <div class="admin-nav">
+      <button class="nav-btn active" id="tab-btn-guru-live">📡 Pantau Live & Rekap</button>
+      <button class="nav-btn" id="tab-btn-guru-soal">📝 Kelola Soal & Ujian</button>
+    </div>
+
+    <p class="admin-status" id="guru-status"></p>
+
+    <!-- TAB: PANTAU LIVE (GURU) -->
+    <div id="guru-content-live">
+      
+      <!-- DAFTAR TOKEN AKTIF PADA PANTAU LIVE GURU -->
+      <div class="admin-settings-box">
+        <label style="color:var(--gold);">Daftar Kode Token Ujian Aktif</label>
+        <div id="guru-live-token-list" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+          <!-- DI-RENDER OLEH JS -->
+        </div>
+        <p style="font-size:12px; color:var(--text-dim); margin:12px 0 0;">Hanya menampilkan token berstatus AKTIF yang cocok dengan pilihan saringan Kelas, Jurusan, dan Mata Pelajaran di bawah ini.</p>
+      </div>
+
+      <div style="margin-bottom: 16px; margin-top: 12px;">
+        <p style="color:var(--text-dim); font-size: 14px; margin:0 0 12px 0;">Saring & Unduh Rekap Nilai Siswa:</p>
+        
+        <div class="filter-grid">
+          <div class="filter-item">
+            <label>Tanggal Pengerjaan</label>
+            <select id="guru-filter-tanggal" class="filter-select"><option value="ALL">Semua Tanggal</option></select>
+          </div>
+          <div class="filter-item">
+            <label>Kelas</label>
+            <select id="guru-filter-kelas" class="filter-select" onchange="renderActiveTokens('guru')"><option value="ALL">Semua Kelas</option></select>
+          </div>
+          <div class="filter-item">
+            <label>Jurusan</label>
+            <select id="guru-filter-jurusan" class="filter-select" onchange="renderActiveTokens('guru')"><option value="ALL">Semua Jurusan</option></select>
+          </div>
+          <div class="filter-item">
+            <label>Mata Pelajaran</label>
+            <select id="guru-filter-matapelajaran" class="filter-select" onchange="renderActiveTokens('guru')">
+              <option value="ALL">Semua Mata Pelajaran</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+          <button class="btn btn-sm btn-ghost" id="btn-guru-download-rekap" style="border-color:var(--teal); color:var(--teal);">📥 Unduh Excel Terfilter</button>
+          <button class="btn btn-sm" id="btn-guru-refresh-live">🔄 Perbarui Data Live</button>
+        </div>
+      </div>
+      
+      <div class="live-table-wrapper">
+        <table class="live-table">
+          <thead>
+            <tr>
+              <th>Waktu Update</th>
+              <th>Nama Siswa</th>
+              <th>Kelas / Jurusan</th>
+              <th>Token</th>
+              <th>Progres Soal</th>
+              <th>Skor Sementara</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="guru-live-table-body">
+            <tr><td colspan="7" style="text-align:center; padding: 32px 0;">Klik "Perbarui Data Live" untuk memuat...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: KELOLA SOAL (GURU) -->
+    <div id="guru-content-soal" class="hidden">
+      <!-- MANAJEMEN TOKEN & JADWAL -->
+      <div class="admin-settings-box">
+        <label style="color:var(--gold);">Pengaturan Jadwal & Akses Token</label>
+        <p style="font-size:12px; color:var(--text-dim); margin:0 0 12px 0;">Atur jadwal ujian Anda di sini. Pengaturan ini mempengaruhi apakah siswa bisa login atau tidak.</p>
+        
+        <div id="guru-token-manager-list" style="display:flex; flex-direction:column; gap:10px; max-height: 380px; overflow-y:auto; padding-right:8px;">
+          <!-- DI-RENDER OLEH JS -->
+        </div>
+      </div>
+
+      <!-- FITUR FILTER SOAL UNTUK GURU -->
+      <div class="admin-settings-box">
+        <label style="color:var(--gold);">Bank Soal & Edit</label>
+        <p style="font-size:12px; color:var(--text-dim); margin:0 0 12px 0;">Pilih kriteria lalu tekan tombol tampilkan untuk mulai mengedit/menambah.</p>
+        <div class="filter-grid" style="margin-bottom:0; background:transparent; padding:0; border:none;">
+          <div class="filter-item">
+            <label>Pilih Kelas</label>
+            <select id="guru-bank-filter-kelas" class="filter-select">
+              <option value="ALL">Semua Kelas</option>
+			  <option value="Kosong">Kosong</option>
+              <option value="X">X</option>
+              <option value="XI">XI</option>
+              <option value="XII">XII</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label>Pilih Jurusan</label>
+            <select id="guru-bank-filter-jurusan" class="filter-select">
+              <option value="ALL">Semua Jurusan</option>
+			   <option value="Kosong">Kosong</option>
+			   <option value="TKJ">TKJ</option>
+              <option value="TKJ">TKJ 1</option>
+		   <option value="TKJ">TKJ 2</option>
+		    <option value="TKJ">TKJ 3</option>
+          <option value="TSM">TSM</option>
+		   <option value="TSM">TSM 1</option>
+		    <option value="TSM">TSM 2</option>
+          <option value="ATP">ATP</option>
+		  <option value="ATP">ATP 1</option>
+		  <option value="ATP">ATP 2</option>
+          <option value="AK">AK</option>
+		   <option value="AK">AK 1</option>
+		    <option value="AK">AK 2</option>
+			 <option value="DKV">DKV</option>
+          <option value="BD">BD</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label>Mata Pelajaran</label>
+            <select id="guru-bank-filter-mapel" class="filter-select" onchange="handleMapelFilterChange('guru')">
+              <option value="ALL">Semua Mata Pelajaran</option>
+			   <option value="Kosong">Kosong</option>
+              <option value="__new__">+ Mata Pelajaran Baru...</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">
+          <button class="btn btn-sm" id="btn-guru-terapkan-filter" style="width: 100%; border: 1px solid var(--gold); background: rgba(201,162,39,0.1); color: var(--gold);">🔍 Tampilkan Soal Sesuai Filter</button>
+        </div>
+      </div>
+
+      <div class="admin-settings-box">
+        <label for="guru-json-input">Import Soal JSON Cepat</label>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <input type="text" id="guru-import-token" placeholder="Ketik Token Baru (misal: TKJ-X)">
+          <textarea id="guru-json-input" placeholder='Tempelkan (Paste) kode format soal JSON di sini...'></textarea>
+          
+          <details style="font-size:12px; margin-top:4px;">
+            <summary style="cursor:pointer; color:var(--gold); font-weight:500;">Lihat contoh format penulisan (Klik di sini)</summary>
+            <pre style="background:var(--bg); padding:12px; border-radius:3px; border:1px solid var(--line-strong); overflow-x:auto; color:var(--text); margin-top:8px; line-height:1.4;">[
+  {
+    "text": "Pertanyaan ditulis di sini...",
+    "image": "https://link-gambar.com/gambar.jpg",
+    "options": [
+      "Pilihan A",
+      "Pilihan B",
+      "Pilihan C",
+      "Pilihan D",
+      "Pilihan E"
+    ],
+    "correct": 0,
+    "category": "Mata Pelajaran"
+  }
+]</pre>
+            <p style="color:var(--text-dim); margin-top:6px;"><b>Catatan:</b> "correct": 0 berarti Jawaban A. Kosongkan "image": "" jika tidak ada gambar.</p>
+            <p style="color:var(--text-dim); margin-top:10px;"><b>Format soal Essay</b> (tambahkan <code>"type": "essay"</code> dan <code>"keywords"</code>, tanpa perlu "options"/"correct"):</p>
+            <pre style="background:var(--bg); padding:12px; border-radius:3px; border:1px solid var(--line-strong); overflow-x:auto; color:var(--text); margin-top:8px; line-height:1.4;">[
+  {
+    "type": "essay",
+    "text": "Jelaskan prinsip keseimbangan dalam DKV...",
+    "keywords": "keseimbangan, simetris, asimetris, komposisi",
+    "idealAnswer": "(opsional) contoh jawaban ideal untuk referensi guru",
+    "category": "Mata Pelajaran"
+  }
+]</pre>
+          </details>
+
+          <div style="text-align: right; margin-top:8px;">
+            <button class="btn btn-sm" id="btn-guru-import-json">Tambahkan Soal ke Bawah</button>
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--text-dim); margin:8px 0 0;">Soal import otomatis akan menyedot pengaturan dari *Saring Soal* di atas (Kelas/Jurusan/Mapel).</p>
+      </div>
+
+      <div class="admin-toolbar">
+        <button class="btn btn-sm" id="btn-guru-add-question">+ Tambah soal manual</button>
+        <button class="btn btn-danger btn-sm" id="btn-guru-delete-all">Hapus Soal (Yang Tampil Saja)</button>
+      </div>
+      
+      <!-- Daftar Soal Guru -->
+      <div id="guru-list"></div>
+      
+      <div class="admin-bottom-bar">
+        <button class="btn btn-sm" id="btn-guru-add-question-2">+ Tambah soal manual</button>
+        <button class="btn" id="btn-guru-save-questions" style="background:#4fa598; color:#10161d;">🚀 Simpan Semua Perubahan</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- == ADMIN SCREEN == -->
+  <div id="screen-admin" class="hidden">
+    <div class="admin-header">
+      <h2>Panel Admin Utama</h2>
+      <button class="btn btn-ghost btn-sm" id="btn-admin-back">Keluar</button>
+    </div>
+    
+    <div class="admin-nav">
+      <button class="nav-btn active" id="tab-btn-soal">⚙️ Kelola Soal & Pengaturan</button>
+      <button class="nav-btn" id="tab-btn-live">📡 Pantau Live & Rekap</button>
+    </div>
+    
+    <p class="admin-status" id="admin-status"></p>
+    
+    <!-- TAB KELOLA SOAL (ADMIN) -->
+    <div id="admin-content-soal">
+      <div class="admin-settings-box">
+        <label for="admin-title-input">Ubah Judul Utama Kuis</label>
+        <div style="display: flex; gap: 8px; align-items: flex-start; max-width: 440px;">
+          <input type="text" id="admin-title-input" placeholder="Masukkan judul baru">
+        </div>
+        <p style="font-size:12px; color:var(--text-dim); margin:8px 0 0;">Judul ini akan berubah di siswa ketika Anda menyimpan data ke server.</p>
+      </div>
+
+      <div class="admin-settings-box">
+        <label for="admin-timer-input">Durasi Timer Per Soal (Detik)</label>
+        <div style="display: flex; gap: 8px; align-items: flex-start; max-width: 440px;">
+          <input type="number" id="admin-timer-input" placeholder="Contoh: 60" min="0">
+        </div>
+        <p style="font-size:12px; color:var(--text-dim); margin:8px 0 0;">Isi angka <b>0</b> jika ingin menonaktifkan fitur timer untuk semua ujian.</p>
+      </div>
+
+      <!-- MANAJEMEN TOKEN & JADWAL -->
+      <div class="admin-settings-box">
+        <label style="color:var(--gold);">Pengaturan Jadwal & Akses Token</label>
+        <p style="font-size:12px; color:var(--text-dim); margin:0 0 12px 0;">Atur jadwal ujian Anda di sini. Pengaturan ini mempengaruhi apakah siswa bisa login atau tidak.</p>
+        
+        <div id="admin-token-manager-list" style="display:flex; flex-direction:column; gap:10px; max-height: 380px; overflow-y:auto; padding-right:8px;">
+          <!-- DI-RENDER OLEH JS -->
+        </div>
+      </div>
+
+      <!-- FITUR FILTER SOAL UNTUK ADMIN -->
+      <div class="admin-settings-box">
+        <label style="color:var(--gold);">Bank Soal & Edit</label>
+        <p style="font-size:12px; color:var(--text-dim); margin:0 0 12px 0;">Pilih kriteria lalu tekan tombol tampilkan untuk mulai mengedit/menambah.</p>
+        <div class="filter-grid" style="margin-bottom:0; background:transparent; padding:0; border:none;">
+          <div class="filter-item">
+            <label>Pilih Kelas</label>
+            <select id="admin-bank-filter-kelas" class="filter-select">
+              <option value="ALL">Semua Kelas</option>
+			   <option value="Kosong">Kosong</option>
+              <option value="X">X</option>
+              <option value="XI">XI</option>
+              <option value="XII">XII</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label>Pilih Jurusan</label>
+            <select id="admin-bank-filter-jurusan" class="filter-select">
+              <option value="ALL">Semua Jurusan</option>
+			  <option value="Kosong">Kosong</option>
+			  option value="TKJ">TKJ</option>
+              <option value="TKJ">TKJ 1</option>
+		   <option value="TKJ">TKJ 2</option>
+		    <option value="TKJ">TKJ 3</option>
+          <option value="TSM">TSM</option>
+		   <option value="TSM">TSM 1</option>
+		    <option value="TSM">TSM 2</option>
+          <option value="ATP">ATP</option>
+		  <option value="ATP">ATP 1</option>
+		  <option value="ATP">ATP 2</option>
+          <option value="AK">AK</option>
+		   <option value="AK">AK 1</option>
+		    <option value="AK">AK 2</option>
+			 <option value="DKV">DKV</option>
+          <option value="BD">BD</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label>Mata Pelajaran</label>
+            <select id="admin-bank-filter-mapel" class="filter-select" onchange="handleMapelFilterChange('admin')">
+			<option value="Kosong">Kosong</option>
+              <option value="ALL">Semua Mata Pelajaran</option>
+              <option value="__new__">+ Mata Pelajaran Baru...</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top: 16px;">
+          <button class="btn btn-sm" id="btn-admin-terapkan-filter" style="width: 100%; border: 1px solid var(--gold); background: rgba(201,162,39,0.1); color: var(--gold);">🔍 Tampilkan Soal Sesuai Filter</button>
+        </div>
+      </div>
+
+      <div class="admin-settings-box">
+        <label for="admin-json-input">Import Soal JSON Cepat</label>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <input type="text" id="admin-import-token" placeholder="Ketik Token Baru (misal: TKJ-X)">
+          <textarea id="admin-json-input" placeholder='Tempelkan (Paste) kode format soal JSON di sini...'></textarea>
+          
+          <details style="font-size:12px; margin-top:4px;">
+            <summary style="cursor:pointer; color:var(--gold); font-weight:500;">Lihat contoh format penulisan (Klik di sini)</summary>
+            <pre style="background:var(--bg); padding:12px; border-radius:3px; border:1px solid var(--line-strong); overflow-x:auto; color:var(--text); margin-top:8px; line-height:1.4;">[
+  {
+    "text": "Pertanyaan ditulis di sini...",
+    "image": "https://link-gambar.com/gambar.jpg",
+    "options": [
+      "Pilihan A",
+      "Pilihan B",
+      "Pilihan C",
+      "Pilihan D",
+      "Pilihan E"
+    ],
+    "correct": 0,
+    "category": "Mata Pelajaran"
+  }
+]</pre>
+            <p style="color:var(--text-dim); margin-top:6px;"><b>Catatan:</b> "correct": 0 berarti Jawaban A.</p>
+            <p style="color:var(--text-dim); margin-top:10px;"><b>Format soal Essay</b> (tambahkan <code>"type": "essay"</code> dan <code>"keywords"</code>, tanpa perlu "options"/"correct"):</p>
+            <pre style="background:var(--bg); padding:12px; border-radius:3px; border:1px solid var(--line-strong); overflow-x:auto; color:var(--text); margin-top:8px; line-height:1.4;">[
+  {
+    "type": "essay",
+    "text": "Jelaskan prinsip keseimbangan dalam DKV...",
+    "keywords": "keseimbangan, simetris, asimetris, komposisi",
+    "idealAnswer": "(opsional) contoh jawaban ideal untuk referensi guru",
+    "category": "Mata Pelajaran"
+  }
+]</pre>
+          </details>
+
+          <div style="text-align: right; margin-top:8px;">
+            <button class="btn btn-sm" id="btn-admin-import-json">Tambahkan Soal ke Bawah</button>
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--text-dim); margin:8px 0 0;">Soal import otomatis akan mengikuti pengaturan filter (Kelas/Jurusan/Mapel) di atas.</p>
+      </div>
+
+      <div class="admin-toolbar">
+        <button class="btn btn-sm" id="btn-admin-add-question">+ Tambah soal manual</button>
+        <button class="btn btn-danger btn-sm" id="btn-admin-delete-all">Hapus Soal (Yang Tampil Saja)</button>
+      </div>
+      
+      <!-- Daftar Soal Admin -->
+      <div id="admin-list"></div>
+      
+      <div class="admin-bottom-bar">
+        <button class="btn btn-sm" id="btn-admin-add-question-2">+ Tambah soal manual</button>
+        <button class="btn" id="btn-admin-save-questions" style="background:#4fa598; color:#10161d;">🚀 Simpan Semua ke Server</button>
+      </div>
+    </div>
+    
+    <!-- TAB PANTAU LIVE (ADMIN) -->
+    <div id="admin-content-live" class="hidden">
+      <!-- DAFTAR TOKEN AKTIF PADA PANTAU LIVE ADMIN -->
+      <div class="admin-settings-box">
+        <label style="color:var(--gold);">Daftar Kode Token Ujian Aktif</label>
+        <div id="admin-live-token-list" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+          <!-- DI-RENDER OLEH JS -->
+        </div>
+        <p style="font-size:12px; color:var(--text-dim); margin:12px 0 0;">Hanya menampilkan token berstatus AKTIF yang cocok dengan pilihan saringan Kelas, Jurusan, dan Mata Pelajaran di bawah ini.</p>
+      </div>
+
+      <div style="margin-bottom: 16px; margin-top: 12px;">
+        <p style="color:var(--text-dim); font-size: 14px; margin:0 0 12px 0;">Saring & Unduh Rekap Nilai Siswa:</p>
+        
+        <div class="filter-grid">
+          <div class="filter-item">
+            <label>Tanggal Pengerjaan</label>
+            <select id="admin-filter-tanggal" class="filter-select"><option value="ALL">Semua Tanggal</option></select>
+          </div>
+          <div class="filter-item">
+            <label>Kelas</label>
+            <select id="admin-filter-kelas" class="filter-select" onchange="renderActiveTokens('admin')"><option value="ALL">Semua Kelas</option></select>
+          </div>
+          <div class="filter-item">
+            <label>Jurusan</label>
+            <select id="admin-filter-jurusan" class="filter-select" onchange="renderActiveTokens('admin')"><option value="ALL">Semua Jurusan</option></select>
+          </div>
+          <div class="filter-item">
+            <label>Mata Pelajaran</label>
+            <select id="admin-filter-matapelajaran" class="filter-select" onchange="renderActiveTokens('admin')">
+              <option value="ALL">Semua Mata Pelajaran</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
+          <button class="btn btn-sm btn-ghost" id="btn-admin-download-rekap" style="border-color:var(--teal); color:var(--teal);">📥 Unduh Excel Terfilter</button>
+          <button class="btn btn-sm" id="btn-admin-refresh-live">🔄 Perbarui Data Live</button>
+        </div>
+      </div>
+      
+      <div class="live-table-wrapper">
+        <table class="live-table">
+          <thead>
+            <tr>
+              <th>Waktu Update</th>
+              <th>Nama Siswa</th>
+              <th>Kelas / Jurusan</th>
+              <th>Token</th>
+              <th>Progres Soal</th>
+              <th>Skor Sementara</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="admin-live-table-body">
+            <tr><td colspan="7" style="text-align:center; padding: 32px 0;">Klik "Perbarui Data Live" untuk memuat...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL AUTH -->
+<div id="auth-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3 id="auth-modal-title">Masuk</h3>
+    <p id="auth-modal-desc">Masukkan kredensial Anda.</p>
+    
+    <!-- Input untuk Admin (Sembunyi saat Guru) -->
+    <div id="auth-admin-fields">
+       <input type="password" id="auth-password-input" placeholder="Password Admin">
+    </div>
+
+    <!-- Input untuk Guru (Sembunyi saat Admin) -->
+    <div id="auth-guru-fields" class="hidden">
+       <select id="auth-guru-select" style="margin-bottom:12px;">
+         <option value="" disabled selected>-- Pilih Nama Anda --</option>
+       </select>
+       <input type="password" id="auth-guru-password" placeholder="Password Guru">
+    </div>
+
+    <p class="id-error" id="auth-password-error" style="margin-bottom:0;"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-sm" id="btn-auth-cancel">Batal</button>
+      <button class="btn btn-sm" id="btn-auth-submit">Masuk</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxp6qxi7qMploeZ6pmCOUlIj_TenlHrO7_JQyhE5HMAQ_rkIrIOFIRl22UDbC4GmIEI/exec";
+
+let currentTitle = "Uji Kompetensi"; 
+let currentTimer = 0; 
+const LETTERS = ["A","B","C","D","E"];
+
+let QUESTIONS = [];
+let sessionQuestions = [];
+let tokenSchedule = {}; 
+let listGuruAktif = []; 
+let loggedInGuruName = '';
+
+let current = 0;
+let score = 0;
+let answers = [];
+let locked = false;
+
+let studentName = '';
+let studentClass = '';
+let studentMajor = '';
+let studentToken = '';
+
+let timerInterval = null;
+let timeRemaining = 0;
+
+// Ambang batas persentase kata kunci cocok agar jawaban essay dianggap "benar" oleh sistem auto-koreksi.
+// Guru tetap bisa mengecek jawaban asli siswa lewat kolom "Detail Jawaban Siswa" di Rekap Nilai.
+const ESSAY_PASS_THRESHOLD = 60;
+
+function gradeEssayAnswer(studentText, keywordsStr){
+  const keywords = (keywordsStr || '').split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
+  const textLower = (studentText || '').trim().toLowerCase();
+  if(keywords.length === 0){
+    // Tidak ada kata kunci diatur guru -> tidak bisa auto-nilai, dianggap perlu dicek manual (skor 0 sementara, tidak menggugurkan siswa).
+    return { matched: 0, total: 0, pct: 0, noKeywords: true };
+  }
+  let matched = 0;
+  keywords.forEach(k => { if(k && textLower.includes(k)) matched++; });
+  const pct = Math.round((matched / keywords.length) * 100);
+  return { matched, total: keywords.length, pct, noKeywords: false };
+}
+
+const screenStart = document.getElementById('screen-start');
+const screenQuiz = document.getElementById('screen-quiz');
+const screenResult = document.getElementById('screen-result');
+const screenAdmin = document.getElementById('screen-admin');
+const screenGuru = document.getElementById('screen-guru');
+const authModal = document.getElementById('auth-modal');
+const loader = document.getElementById('loader');
+const loaderText = document.getElementById('loader-text');
+
+let authType = ''; 
+let ALL_REKAP_DATA = [];
+
+function generateId() {
+  return 'q_' + Math.random().toString(36).substr(2, 9);
+}
+
+// ========================
+// 1. PENGAMBILAN DATA AWAL
+// ========================
+function loadDataFromGoogle() {
+  const cbName = 'getDataCb_' + Date.now();
+  const timeoutId = setTimeout(() => {
+    cleanup();
+    loaderText.innerHTML = '<span style="color:var(--rose);">Gagal terhubung ke Database. Pastikan URL Script benar dan ter-deploy "Anyone"</span>';
+  }, 10000);
+
+  function cleanup(){
+    delete window[cbName]; const s = document.getElementById(cbName);
+    if(s) s.remove(); clearTimeout(timeoutId);
+  }
+
+  window[cbName] = function(data) {
+    cleanup();
+    loader.classList.add('hidden'); screenStart.classList.remove('hidden');
+    if (data.title) { currentTitle = data.title; }
+    currentTimer = data.timer;
+    tokenSchedule = data.tokenSchedule || {};
+    listGuruAktif = data.listGuru || [];
+    
+    // Injeksi ID agar fitur edit (2-way binding) aman
+    QUESTIONS = (data.questions || []).map(q => ({
+       ...q,
+       category: q.category || 'Mata Pelajaran',
+       id: generateId()
+    }));
+
+    document.getElementById('doc-title').textContent = currentTitle + " — Ujian";
+    document.getElementById('main-title').textContent = currentTitle;
+    document.getElementById('meta-total').textContent = "?"; 
+    
+    if(currentTimer > 0) { document.getElementById('meta-timer').innerHTML = `<b>${currentTimer}</b> dtk/soal`; } 
+    else { document.getElementById('meta-timer').innerHTML = `<b>Tanpa Waktu</b>`; }
+  };
+
+  const script = document.createElement('script');
+  script.id = cbName;
+  script.src = `${SCRIPT_URL}?action=getData&callback=${cbName}`;
+  script.onerror = () => {
+    cleanup(); loaderText.innerHTML = '<span style="color:var(--rose);">Gagal terhubung ke internet.</span>';
+  };
+  document.body.appendChild(script);
+}
+
+loadDataFromGoogle();
+
+// ========================
+// 2. SISTEM LOGIN MODAL
+// ========================
+document.getElementById('btn-admin-open').addEventListener('click', () => {
+  authType = 'admin'; document.getElementById('auth-modal-title').textContent = "Panel Admin Utama";
+  document.getElementById('auth-modal-desc').textContent = "Masukkan Password Admin untuk mengelola sistem.";
+  document.getElementById('auth-admin-fields').classList.remove('hidden');
+  document.getElementById('auth-guru-fields').classList.add('hidden');
+  document.getElementById('auth-password-input').value = ''; document.getElementById('auth-password-error').textContent = '';
+  authModal.classList.remove('hidden'); document.getElementById('auth-password-input').focus();
+});
+
+document.getElementById('btn-guru-open').addEventListener('click', () => {
+  authType = 'guru'; document.getElementById('auth-modal-title').textContent = "Masuk Sebagai Guru";
+  document.getElementById('auth-modal-desc').textContent = "Pilih nama Anda dan masukkan password untuk mengakses soal dan rekap nilai.";
+  
+  document.getElementById('auth-admin-fields').classList.add('hidden');
+  document.getElementById('auth-guru-fields').classList.remove('hidden');
+  document.getElementById('auth-guru-password').value = ''; document.getElementById('auth-password-error').textContent = '';
+  
+  const selGuru = document.getElementById('auth-guru-select');
+  selGuru.innerHTML = '<option value="" disabled selected>-- Pilih Nama Anda --</option>';
+  listGuruAktif.forEach(g => {
+     selGuru.innerHTML += `<option value="${escapeAttr(g)}">${escapeHtml(g)}</option>`;
+  });
+
+  authModal.classList.remove('hidden'); 
+});
+
+document.getElementById('btn-auth-cancel').addEventListener('click', () => authModal.classList.add('hidden'));
+
+document.getElementById('btn-auth-submit').addEventListener('click', trySubmitAuth);
+document.getElementById('auth-password-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') trySubmitAuth(); });
+document.getElementById('auth-guru-password').addEventListener('keydown', (e) => { if(e.key === 'Enter') trySubmitAuth(); });
+
+function trySubmitAuth(){
+  let passVal = "";
+  let namaGuruVal = "";
+
+  if(authType === 'admin') {
+     passVal = document.getElementById('auth-password-input').value;
+  } else {
+     passVal = document.getElementById('auth-guru-password').value;
+     namaGuruVal = document.getElementById('auth-guru-select').value;
+     if(!namaGuruVal) {
+        document.getElementById('auth-password-error').textContent = 'Pilih nama Anda terlebih dahulu.';
+        return;
+     }
+  }
+
+  const errEl = document.getElementById('auth-password-error');
+  const submitBtn = document.getElementById('btn-auth-submit');
+  errEl.textContent = ''; submitBtn.disabled = true; submitBtn.textContent = 'Memeriksa…';
+
+  const cbName = 'authCb_' + Date.now();
+  const timeoutId = setTimeout(() => {
+    cleanup(); submitBtn.disabled = false; submitBtn.textContent = 'Masuk';
+    errEl.textContent = 'Timeout. Pastikan Apps Script ter-deploy "Anyone".';
+  }, 8000);
+
+  function cleanup(){ delete window[cbName]; const s = document.getElementById(cbName); if(s) s.remove(); clearTimeout(timeoutId); }
+
+  window[cbName] = function(data){
+    cleanup(); submitBtn.disabled = false; submitBtn.textContent = 'Masuk';
+    if(data && data.ok){
+      authModal.classList.add('hidden');
+      if (authType === 'admin') {
+         loggedInGuruName = 'Admin';
+         openAdminPanel(); 
+      } else if (authType === 'guru') {
+         loggedInGuruName = data.nama;
+         openGuruPanel();
+      }
+    } else { errEl.textContent = 'Password yang Anda masukkan salah.'; }
+  };
+
+  const script = document.createElement('script'); script.id = cbName;
+  if (authType === 'admin') {
+     script.src = `${SCRIPT_URL}?action=adminAuth&password=${encodeURIComponent(passVal)}&callback=${cbName}`;
+  } else {
+     script.src = `${SCRIPT_URL}?action=guruAuth&namaGuru=${encodeURIComponent(namaGuruVal)}&password=${encodeURIComponent(passVal)}&callback=${cbName}`;
+  }
+  
+  script.onerror = () => { cleanup(); submitBtn.disabled = false; submitBtn.textContent = 'Masuk'; errEl.textContent = 'Gagal menghubungi server.'; };
+  document.body.appendChild(script);
+}
+
+// ========================
+// 3. LOGIKA KUIS SISWA
+// ========================
+function sendProgressUpdate(statusMsg) {
+  if(!SCRIPT_URL || SCRIPT_URL.indexOf('PASTE') > -1) return;
+  const params = new URLSearchParams();
+  params.append('action', 'updateProgress'); params.append('nama', studentName); params.append('kelas', studentClass);
+  params.append('jurusan', studentMajor); params.append('token', studentToken);
+  params.append('progres', `${current} / ${sessionQuestions.length}`); params.append('skor', String(score));
+  params.append('status', statusMsg || "Mengerjakan ⏳");
+
+  fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() }).catch(e => console.log('Silent fail update progress'));
+}
+
+document.getElementById('btn-start').addEventListener('click', () => {
+  const nama = document.getElementById('input-nama').value.trim();
+  const kelas = document.getElementById('input-kelas').value;
+  const jurusan = document.getElementById('input-jurusan').value;
+  const token = document.getElementById('input-token').value.trim();
+  const err = document.getElementById('id-error');
+  
+  if(!nama || !kelas || !jurusan || !token){ err.textContent = 'Semua form identitas dan kode token wajib diisi.'; return; }
+  if(QUESTIONS.length === 0){ err.textContent = 'Belum ada soal apapun di database. Hubungi guru.'; return; }
+
+  const filteredQs = QUESTIONS.filter(q => q.token === token);
+  if(filteredQs.length === 0){ err.textContent = 'Kode Token salah atau tidak ada soal untuk ujian tersebut.'; return; }
+
+  // VALIASI JADWAL DAN STATUS TOKEN
+  const sched = tokenSchedule[token] || { status: 'aktif', tanggal: '' };
+  if (sched.status === 'nonaktif') {
+      err.textContent = 'Akses Ditolak: Ujian untuk token ini sedang dinonaktifkan oleh Guru/Admin.'; 
+      return;
+  }
+  if (sched.tanggal) {
+      const now = new Date();
+      const todayStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0') + "-" + String(now.getDate()).padStart(2, '0');
+      if (sched.tanggal !== todayStr) {
+          const tglParts = sched.tanggal.split('-');
+          const formattedTgl = `${tglParts[2]}/${tglParts[1]}/${tglParts[0]}`;
+          err.textContent = `Akses Ditolak: Ujian ini hanya berlaku dan dapat diakses pada tanggal ${formattedTgl}.`; 
+          return;
+      }
+  }
+
+  // VALIDASI KELAS DAN JURUSAN
+  const targetQ = filteredQs[0];
+  if (targetQ.kelas && targetQ.kelas !== kelas) {
+    err.textContent = `Akses Ditolak: Kode token ini khusus untuk Kelas ${targetQ.kelas}.`;
+    return;
+  }
+  if (targetQ.jurusan && targetQ.jurusan !== jurusan) {
+    err.textContent = `Akses Ditolak: Kode token ini khusus untuk Jurusan ${targetQ.jurusan}.`;
+    return;
+  }
+
+  err.textContent = ''; studentName = nama; studentClass = kelas; studentMajor = jurusan; studentToken = token;
+  startQuiz(filteredQs);
+});
+
+function startQuiz(questionsToRun){
+  clearInterval(timerInterval); current = 0; score = 0; answers = [];
+  sessionQuestions = JSON.parse(JSON.stringify(questionsToRun));
+  for (let i = sessionQuestions.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sessionQuestions[i], sessionQuestions[j]] = [sessionQuestions[j], sessionQuestions[i]]; }
+  sessionQuestions.forEach(q => {
+    const correctAnswerText = q.options[q.correct];
+    for (let i = q.options.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q.options[i], q.options[j]] = [q.options[j], q.options[i]]; }
+    q.correct = q.options.indexOf(correctAnswerText);
+  });
+
+  screenStart.classList.add('hidden'); screenQuiz.classList.remove('hidden'); screenResult.classList.add('hidden');
+  const ticks = document.getElementById('ruler-ticks'); ticks.innerHTML = '';
+  for(let i=0;i<sessionQuestions.length;i++){ const t = document.createElement('div'); t.className = 'tick'; ticks.appendChild(t); }
+
+  renderQuestion(); sendProgressUpdate("Mulai 🚀");
+}
+
+function lockEssayOnTimeout(q){
+  locked = true;
+  const ta = document.getElementById('essay-input');
+  const text = ta ? ta.value.trim() : '';
+  const g = gradeEssayAnswer(text, q.keywords);
+  const isCorrect = !g.noKeywords && g.pct >= ESSAY_PASS_THRESHOLD;
+  if(isCorrect) score++;
+  answers.push({ type:'essay', text, autoScore: g.pct, matched: g.matched, totalKeywords: g.total, isCorrect, noKeywords: g.noKeywords, timeout: true });
+  document.getElementById('score-live').textContent = score;
+  if(ta) ta.disabled = true;
+  const btnSubmitEssay = document.getElementById('btn-submit-essay'); if(btnSubmitEssay) btnSubmitEssay.disabled = true;
+  showEssayFeedback(g, isCorrect, true);
+  document.getElementById('btn-next').classList.add('show');
+}
+
+function startQuestionTimer() {
+  clearInterval(timerInterval);
+  const badge = document.getElementById('timer-badge'); const live = document.getElementById('timer-live');
+  const q = sessionQuestions[current];
+  const effectiveTimer = (q.customTimer !== undefined && q.customTimer !== null && String(q.customTimer).trim() !== '') ? parseInt(q.customTimer, 10) : currentTimer;
+  if (!effectiveTimer || effectiveTimer <= 0) { badge.classList.add('hidden'); return; }
+
+  badge.classList.remove('hidden'); badge.classList.remove('warning'); timeRemaining = effectiveTimer;
+  const updateUI = () => { const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0'); const s = (timeRemaining % 60).toString().padStart(2, '0'); live.textContent = `${m}:${s}`; };
+  updateUI();
+
+  timerInterval = setInterval(() => {
+    timeRemaining--; updateUI();
+    if (timeRemaining <= 10) badge.classList.add('warning');
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      if(!locked){
+        const qNow = sessionQuestions[current];
+        if(qNow.type === 'essay'){
+          lockEssayOnTimeout(qNow);
+        } else {
+          locked = true; answers.push({selected: -1, correct: qNow.correct, isCorrect: false});
+          const allOpts = document.querySelectorAll('#options .opt');
+          allOpts.forEach((el, idx) => { el.classList.add('locked'); if(idx === qNow.correct) el.classList.add('correct'); else el.classList.add('dim'); });
+          document.getElementById('btn-next').classList.add('show');
+        }
+      }
+    }
+  }, 1000);
+}
+
+function showEssayFeedback(g, isCorrect, isTimeout){
+  const box = document.getElementById('essay-feedback'); if(!box) return;
+  box.classList.remove('hidden');
+  if(g.noKeywords){
+    box.innerHTML = `Jawaban tersimpan${isTimeout ? ' (waktu habis)' : ''}. Soal ini belum ada kata kunci penilaian, nilainya akan dicek manual oleh guru.`;
+  } else {
+    box.innerHTML = `${isTimeout ? 'Waktu habis. ' : ''}Skor sementara (auto-koreksi kata kunci): <b>${g.pct}%</b> (${g.matched}/${g.total} kata kunci cocok) — ${isCorrect ? 'dianggap benar sementara' : 'dianggap belum tepat sementara'}. Guru akan mengecek ulang jawaban lengkap kamu.`;
+  }
+}
+
+function renderQuestion(){
+  locked = false; const q = sessionQuestions[current];
+  document.getElementById('qnum').textContent = `Soal ${current+1} / ${sessionQuestions.length}`;
+  document.getElementById('qcat').textContent = q.category || 'Mata Pelajaran';
+  document.getElementById('score-live').textContent = score;
+  document.getElementById('qtext').textContent = q.text;
+
+  const imgEl = document.getElementById('qimg');
+  if(q.image){ imgEl.src = q.image; imgEl.classList.remove('hidden'); } else { imgEl.classList.add('hidden'); imgEl.removeAttribute('src'); }
+
+  const pct = sessionQuestions.length > 1 ? (current / (sessionQuestions.length-1)) * 100 : 0;
+  document.getElementById('ruler-fill').style.width = pct + '%'; document.getElementById('ruler-head').style.left = pct + '%'; document.getElementById('ruler-head').textContent = current+1;
+
+  const optsWrap = document.getElementById('options'); optsWrap.innerHTML = '';
+
+  if(q.type === 'essay'){
+    optsWrap.innerHTML = `
+      <div class="essay-box">
+        <textarea id="essay-input" class="essay-textarea" placeholder="Tulis jawaban kamu di sini..."></textarea>
+        <span class="essay-hint">Jawaban akan dinilai otomatis sementara berdasarkan kata kunci, lalu dicek ulang oleh guru.</span>
+        <div><button class="btn" id="btn-submit-essay">Kirim Jawaban</button></div>
+        <div id="essay-feedback" class="essay-feedback hidden"></div>
+      </div>
+    `;
+    document.getElementById('btn-submit-essay').addEventListener('click', () => {
+      if(locked) return;
+      const ta = document.getElementById('essay-input');
+      const text = ta.value.trim();
+      if(!text){ ta.focus(); return; }
+      locked = true; clearInterval(timerInterval);
+      const g = gradeEssayAnswer(text, q.keywords);
+      const isCorrect = !g.noKeywords && g.pct >= ESSAY_PASS_THRESHOLD;
+      if(isCorrect) score++;
+      answers.push({ type:'essay', text, autoScore: g.pct, matched: g.matched, totalKeywords: g.total, isCorrect, noKeywords: g.noKeywords, timeout: false });
+      document.getElementById('score-live').textContent = score;
+      ta.disabled = true; document.getElementById('btn-submit-essay').disabled = true;
+      showEssayFeedback(g, isCorrect, false);
+      document.getElementById('btn-next').classList.add('show');
+    });
+  } else {
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button'); btn.className = 'opt';
+      btn.innerHTML = `<span class="letter">${LETTERS[i]}</span><span>${opt}</span>`;
+      btn.addEventListener('click', () => {
+        if(locked) return;
+        locked = true; clearInterval(timerInterval);
+        const isCorrect = i === q.correct;
+        if(isCorrect) score++;
+        answers.push({selected:i, correct:q.correct, isCorrect});
+        document.getElementById('score-live').textContent = score;
+
+        const allOpts = document.querySelectorAll('#options .opt');
+        allOpts.forEach((el, idx) => {
+          el.classList.add('locked');
+          if(idx === q.correct) el.classList.add('correct');
+          else if(idx === i) el.classList.add('wrong');
+          else el.classList.add('dim');
+        });
+        document.getElementById('btn-next').classList.add('show');
+      });
+      optsWrap.appendChild(btn);
+    });
+  }
+
+  document.getElementById('btn-next').classList.remove('show');
+  document.getElementById('btn-next').textContent = current === sessionQuestions.length-1 ? 'Lihat hasil →' : 'Lanjut →';
+  startQuestionTimer();
+}
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  if(!locked) return;
+  current++;
+  if(current >= sessionQuestions.length){ showResult(); } else { renderQuestion(); sendProgressUpdate("Mengerjakan ⏳"); }
+});
+
+function showResult(){
+  screenQuiz.classList.add('hidden'); screenResult.classList.remove('hidden');
+
+  document.getElementById('final-score').textContent = `${score}/${sessionQuestions.length}`;
+  const pct = Math.round((score/sessionQuestions.length)*100);
+  document.getElementById('final-pct').textContent = `${pct}% benar`;
+
+  let msg = '';
+  if(pct >= 90) msg = 'Luar biasa — Anda sangat menguasai materi ini!'; else if(pct >= 75) msg = 'Bagus — pemahaman sudah kuat, tinggal perdalam sedikit lagi.';
+  else if(pct >= 60) msg = 'Cukup baik — beberapa bagian masih perlu diulang kembali.'; else msg = 'Tetap semangat! Perlu belajar ulang materi ini.';
+  document.getElementById('final-msg').textContent = msg;
+  document.getElementById('student-line').innerHTML = `<b>${studentName}</b> — Kelas ${studentClass} (${studentMajor})`;
+
+  const cats = {};
+  sessionQuestions.forEach((q, idx) => {
+    const cat = q.category || 'Mata Pelajaran';
+    if(!cats[cat]) cats[cat] = {correct:0, total:0}; cats[cat].total++;
+    if(answers[idx] && answers[idx].isCorrect) cats[cat].correct++;
+  });
+
+  submitToSheet(pct, cats);
+
+  const breakdown = document.getElementById('cat-breakdown'); breakdown.innerHTML = '';
+  Object.keys(cats).forEach(cat => {
+    const c = cats[cat]; const p = Math.round((c.correct/c.total)*100); const row = document.createElement('div'); row.className = 'cat-row';
+    row.innerHTML = `<div class="cat-label"><span>${cat}</span><span>${c.correct}/${c.total}</span></div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${p}%"></div></div>`;
+    breakdown.appendChild(row);
+  });
+
+  const reviewList = document.getElementById('review-list'); reviewList.innerHTML = '';
+  sessionQuestions.forEach((q, idx) => {
+    const a = answers[idx]; if(!a) return; const item = document.createElement('div'); item.className = 'review-item';
+    let yourText = ''; let raClass = '';
+
+    if(a.type === 'essay'){
+      const jawabanText = a.text ? escapeHtml(a.text) : '(tidak dijawab)';
+      if(a.noKeywords){ yourText = `Jawaban kamu: "${jawabanText}" — menunggu penilaian manual guru`; raClass = 'timeout'; }
+      else { yourText = `Jawaban kamu: "${jawabanText}" — skor auto-koreksi: ${a.autoScore}% (${a.isCorrect ? 'sementara benar' : 'sementara belum tepat'}, akan dicek ulang guru)`; raClass = a.isCorrect ? 'right' : 'wrong'; }
+    } else if (a.selected === -1) { yourText = `Waktu Habis / Tidak Dijawab — Kunci: ${LETTERS[q.correct]}`; raClass = 'timeout'; } 
+    else if (a.isCorrect) { yourText = `Jawaban kamu: ${LETTERS[a.selected]} (benar)`; raClass = 'right'; } 
+    else { yourText = `Jawaban kamu: ${LETTERS[a.selected]} — Kunci: ${LETTERS[q.correct]}`; raClass = 'wrong'; }
+
+    item.innerHTML = `<p class="rq"><b>${idx+1}.</b> ${q.text}</p><p class="ra ${raClass}">${yourText}</p>`; reviewList.appendChild(item);
+  });
+}
+
+document.getElementById('btn-review').addEventListener('click', () => {
+  const el = document.getElementById('review-list'); el.classList.toggle('show');
+  document.getElementById('btn-review').textContent = el.classList.contains('show') ? 'Sembunyikan pembahasan jawaban' : 'Lihat pembahasan jawaban';
+});
+
+document.getElementById('btn-restart').addEventListener('click', () => { window.location.reload(); });
+
+function submitToSheet(pct, cats){
+  const statusEl = document.getElementById('sheet-status'); statusEl.textContent = 'Mengirim hasil ke server…';
+  const detail = sessionQuestions.map((q, idx) => {
+    const a = answers[idx]; if(!a) return `${idx+1}:-`;
+    if(a.type === 'essay'){
+      const safeText = (a.text || '(tidak dijawab)').replace(/[\r\n]+/g, ' ').slice(0, 500);
+      return `${idx+1}:ESSAY[auto ${a.autoScore}%]"${safeText}"`;
+    }
+    if(a.selected === -1) return `${idx+1}:HABIS`; return `${idx+1}:${LETTERS[a.selected]}${a.isCorrect ? '✓' : '✗'}`;
+  }).join(' ');
+
+  const params = new URLSearchParams();
+  params.append('action', 'submitQuiz'); params.append('nama', studentName); params.append('kelas', studentClass);
+  params.append('jurusan', studentMajor); params.append('skor', String(score)); params.append('total', String(sessionQuestions.length));
+  params.append('persentase', String(pct));
+  Object.keys(cats).forEach(cat => { params.append('cat_' + cat.toLowerCase().replace(/[^a-z0-9]+/g,'_'), `${cats[cat].correct}/${cats[cat].total}`); });
+  params.append('detail', detail);
+
+  fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() })
+  .then(res => res.text()).then(text => { statusEl.textContent = '✅ Tersimpan ke database guru.'; })
+  .catch(() => { statusEl.textContent = '❌ Gagal terkirim. Unduh Excel dan kirim manual.'; });
+}
+
+// Download Hasil Pribadi Siswa
+document.getElementById('btn-download').addEventListener('click', () => {
+  const pct = Math.round((score/sessionQuestions.length)*100); const now = new Date(); const tanggal = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
+
+  const ringkasan = [
+    ['Nama', studentName], ['Kelas', studentClass], ['Jurusan', studentMajor],
+    ['Tanggal pengerjaan', tanggal], ['Skor', `${score}/${sessionQuestions.length}`], ['Persentase benar', `${pct}%`], []
+  ];
+
+  const cats = {};
+  sessionQuestions.forEach((q, idx) => {
+    const cat = q.category || 'Mata Pelajaran'; if(!cats[cat]) cats[cat] = {correct:0, total:0}; cats[cat].total++;
+    if(answers[idx] && answers[idx].isCorrect) cats[cat].correct++;
+  });
+  ringkasan.push(['Mata Pelajaran', 'Benar', 'Total']);
+  Object.keys(cats).forEach(cat => ringkasan.push([cat, cats[cat].correct, cats[cat].total]));
+
+  const detail = [['No', 'Mata Pelajaran', 'Soal', 'Jawaban siswa', 'Kunci jawaban', 'Hasil']];
+  sessionQuestions.forEach((q, idx) => {
+    const a = answers[idx]; if(!a) return;
+    if(a.type === 'essay'){
+      const hasilEssay = a.noKeywords ? 'Menunggu penilaian guru' : `Auto ${a.autoScore}% (${a.isCorrect ? 'Sementara Benar' : 'Sementara Belum Tepat'})`;
+      detail.push([idx+1, q.category || 'Mata Pelajaran', q.text, a.text || '(tidak dijawab)', q.idealAnswer || '(cek guru)', hasilEssay]);
+      return;
+    }
+    const studentAnsText = a.selected === -1 ? 'Waktu Habis' : LETTERS[a.selected]; 
+    const isAnsCorrect = a.isCorrect ? 'Benar' : (a.selected === -1 ? 'Habis Waktu' : 'Salah');
+    detail.push([idx+1, q.category || 'Mata Pelajaran', q.text, studentAnsText, LETTERS[q.correct], isAnsCorrect]);
+  });
+
+  const wb = XLSX.utils.book_new(); const wsRingkasan = XLSX.utils.aoa_to_sheet(ringkasan); wsRingkasan['!cols'] = [{wch:20},{wch:14},{wch:10}];
+  const wsDetail = XLSX.utils.aoa_to_sheet(detail); wsDetail['!cols'] = [{wch:5},{wch:14},{wch:60},{wch:16},{wch:14},{wch:15}];
+
+  XLSX.utils.book_append_sheet(wb, wsRingkasan, 'Ringkasan'); XLSX.utils.book_append_sheet(wb, wsDetail, 'Detail Jawaban');
+  XLSX.writeFile(wb, `Hasil_Kuis_${studentName.replace(/[^a-z0-9]+/gi, '_')}_${studentClass}.xlsx`);
+});
+
+// ========================
+// 4. SISTEM PANEL ADMIN & GURU
+// ========================
+function bindTabs(btnLiveId, btnSoalId, contentLiveId, contentSoalId, statusId) {
+  const btnLive = document.getElementById(btnLiveId); const btnSoal = document.getElementById(btnSoalId);
+  const contentLive = document.getElementById(contentLiveId); const contentSoal = document.getElementById(contentSoalId);
+
+  btnLive.addEventListener('click', () => {
+    btnLive.classList.add('active'); btnSoal.classList.remove('active'); contentLive.classList.remove('hidden'); contentSoal.classList.add('hidden');
+    document.getElementById(statusId).textContent = '';
+    fetchAndPopulateFilters(authType === 'admin' ? 'admin-live-table-body' : 'guru-live-table-body', authType === 'admin' ? 'btn-admin-refresh-live' : 'btn-guru-refresh-live'); 
+  });
+
+  btnSoal.addEventListener('click', () => {
+    btnSoal.classList.add('active'); btnLive.classList.remove('active'); contentSoal.classList.remove('hidden'); contentLive.classList.add('hidden');
+    document.getElementById(statusId).textContent = '';
+    const prefix = authType === 'admin' ? 'admin' : 'guru';
+    populateMapelFilterOptions(prefix);
+    renderTokenManager(prefix); 
+    
+    // Render list agar summary langsung muncul meskipun tidak diklik
+    renderQuestionList();
+  });
+}
+
+bindTabs('tab-btn-live', 'tab-btn-soal', 'admin-content-live', 'admin-content-soal', 'admin-status');
+bindTabs('tab-btn-guru-live', 'tab-btn-guru-soal', 'guru-content-live', 'guru-content-soal', 'guru-status');
+
+document.getElementById('btn-admin-back').addEventListener('click', () => { screenAdmin.classList.add('hidden'); loader.classList.remove('hidden'); loadDataFromGoogle(); });
+document.getElementById('btn-guru-back').addEventListener('click', () => { screenGuru.classList.add('hidden'); loader.classList.remove('hidden'); loadDataFromGoogle(); });
+
+function openAdminPanel(){
+  screenStart.classList.add('hidden'); screenAdmin.classList.remove('hidden');
+  document.getElementById('admin-title-input').value = currentTitle; document.getElementById('admin-timer-input').value = currentTimer;
+  document.getElementById('tab-btn-soal').click(); 
+}
+
+function openGuruPanel(){
+  screenStart.classList.add('hidden'); screenGuru.classList.remove('hidden');
+  document.getElementById('guru-panel-title').textContent = "Panel Guru: " + loggedInGuruName;
+  document.getElementById('tab-btn-guru-live').click(); 
+}
+
+// RENDER MANAJEMEN STATUS & TANGGAL TOKEN (Admin: semua token, Guru: hanya token miliknya sendiri)
+window.renderTokenManager = function(prefix) {
+  const container = document.getElementById(`${prefix}-token-manager-list`);
+  if(!container) return;
+
+  container.innerHTML = '';
+  
+  const tokenMap = {};
+  QUESTIONS.forEach(q => {
+      if (prefix === 'guru' && (q.guru || 'Admin') !== loggedInGuruName) return;
+      const tk = q.token || 'UMUM';
+      if(!tokenMap[tk]) tokenMap[tk] = { count: 0, kelas: q.kelas||'-', mapel: q.category||'-', jurusan: q.jurusan||'-' };
+      tokenMap[tk].count++;
+  });
+  
+  const tokens = Object.keys(tokenMap);
+
+  if(tokens.length === 0) {
+      container.innerHTML = prefix === 'guru' ? '<span style="color:var(--text-dim); font-size:13px;">Anda belum membuat token soal apa pun.</span>' : '<span style="color:var(--text-dim); font-size:13px;">Belum ada token soal yang tersedia.</span>';
+      return;
+  }
+
+  tokens.forEach(tk => {
+      const data = tokenMap[tk];
+      const sched = tokenSchedule[tk] || { status: 'aktif', tanggal: '' };
+      const html = `
+          <div style="background:var(--panel-2); border:1px solid var(--line-strong); padding:12px; border-radius:3px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;">
+              <div>
+                  <div style="font-size:16px; font-weight:600; color:var(--gold); margin-bottom:4px;">${tk} <span style="font-size:11px; color:var(--text-dim); background:var(--panel); padding:2px 6px; border-radius:2px; margin-left:8px;">${data.count} Soal</span></div>
+                  <div style="font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; text-transform:uppercase;">KLS ${data.kelas} • ${data.jurusan} • ${data.mapel}</div>
+              </div>
+              <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                      <label style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">Tanggal Ujian (Opsional)</label>
+                      <input type="date" value="${sched.tanggal}" onchange="updateTokenSched('${tk}', 'tanggal', this.value)" style="background:var(--panel); border:1px solid var(--line-strong); color:var(--text); padding:6px; border-radius:2px; font-family:'IBM Plex Mono', monospace; font-size:12px;">
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                      <label style="font-size:10px; color:var(--text-dim); text-transform:uppercase;">Akses</label>
+                      <select onchange="updateTokenSched('${tk}', 'status', this.value)" style="background:var(--panel); border:1px solid var(--line-strong); color:var(--text); padding:6px; border-radius:2px; font-size:12px;">
+                          <option value="aktif" ${sched.status === 'aktif' ? 'selected' : ''}>🟢 Aktif</option>
+                          <option value="nonaktif" ${sched.status === 'nonaktif' ? 'selected' : ''}>🔴 Nonaktif</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+  });
+}
+
+window.updateTokenSched = function(tk, field, val) {
+    if(!tokenSchedule[tk]) tokenSchedule[tk] = { status: 'aktif', tanggal: '' };
+    tokenSchedule[tk][field] = val;
+};
+
+// RENDER HANYA TOKEN YANG BERSTATUS AKTIF BERDASARKAN JURUSAN, KELAS, & MAPEL PADA TAB LIVE
+window.renderActiveTokens = function(prefix) {
+  const containerEl = document.getElementById(`${prefix}-live-token-list`);
+  if(!containerEl) return;
+
+  const selKelas = document.getElementById(`${prefix}-filter-kelas`) ? document.getElementById(`${prefix}-filter-kelas`).value : 'ALL';
+  const selJurusan = document.getElementById(`${prefix}-filter-jurusan`) ? document.getElementById(`${prefix}-filter-jurusan`).value : 'ALL';
+  const selMapel = document.getElementById(`${prefix}-filter-matapelajaran`) ? document.getElementById(`${prefix}-filter-matapelajaran`).value : 'ALL';
+
+  const tokenMap = {};
+  QUESTIONS.forEach(q => {
+    const tk = q.token || 'UMUM';
+    if(!tokenMap[tk]) {
+      tokenMap[tk] = { count: 0, kelas: q.kelas || '-', jurusan: q.jurusan || '-', mapel: q.category || '-' };
+    }
+    tokenMap[tk].count++;
+  });
+
+  const activeTokens = Object.keys(tokenMap).filter(tk => {
+    const data = tokenMap[tk];
+    const sched = tokenSchedule[tk] || { status: 'aktif', tanggal: '' };
+    
+    // 1. Hanya tampilkan jika statusnya 'aktif'
+    if(sched.status === 'nonaktif') return false;
+    
+    // 2. Saring berdasarkan filter Kelas
+    if(selKelas !== 'ALL' && data.kelas !== selKelas) return false;
+
+    // 3. Saring berdasarkan filter Jurusan
+    if(selJurusan !== 'ALL' && data.jurusan !== selJurusan) return false;
+
+    // 4. Saring berdasarkan filter Mata Pelajaran (Exact/Case-Insensitive Match)
+    if(selMapel !== 'ALL' && data.mapel.toLowerCase().trim() !== selMapel.toLowerCase().trim()) return false;
+
+    return true;
+  });
+
+  if(activeTokens.length === 0) {
+    containerEl.innerHTML = '<span style="color:var(--text-dim); font-size:13px;">Tidak ada token aktif yang sesuai kriteria filter saat ini.</span>';
+    return;
+  }
+
+  containerEl.innerHTML = activeTokens.map(tk => {
+    const data = tokenMap[tk];
+    const sched = tokenSchedule[tk] || { status: 'aktif', tanggal: '' };
+    let tglInfo = '';
+    if(sched.tanggal) {
+      const p = sched.tanggal.split('-');
+      tglInfo = ` • 📅 ${p[2]}/${p[1]}/${p[0]}`;
+    }
+    return `
+      <div class="token-badge" style="display:flex; flex-direction:column; gap:4px; padding:8px 12px; background:var(--panel-2); border:1px solid var(--line-strong); color:var(--text);">
+        <span style="font-size:10px; color:var(--text-dim); font-family:'IBM Plex Sans', sans-serif; text-transform:uppercase; letter-spacing:0.5px;">
+          KLS ${data.kelas} • ${data.jurusan} • ${data.mapel}
+        </span>
+        <div style="font-size:15px; color:var(--gold); display:flex; align-items:center; gap:8px;">
+          <b>${tk}</b> 
+          <span style="background:rgba(79,165,152,0.15); color:var(--teal); padding:2px 6px; border-radius:2px; font-size:10px;">🟢 Aktif (${data.count} Soal)</span>
+          ${tglInfo ? `<span style="font-size:10px; color:var(--text-dim);">${tglInfo}</span>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+
+// -- DATA REKAP & FILTER LIVE --
+function fetchAndPopulateFilters(tbodyId, btnId) {
+  const tbody = document.getElementById(tbodyId); const btn = document.getElementById(btnId);
+  if(btn) { btn.disabled = true; btn.textContent = "🔄 Memuat..."; }
+  if(tbody) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:32px 0;">Memuat data dari server...</td></tr>'; }
+
+  const cbName = 'getRekapFilterCb_' + Date.now(); const script = document.createElement('script');
+  const timeoutId = setTimeout(() => {
+    cleanup(); if(btn) { btn.disabled = false; btn.textContent = "🔄 Perbarui Data Live"; }
+    if(tbody) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--rose);">Koneksi terputus. Silakan coba lagi.</td></tr>'; }
+  }, 12000);
+
+  function cleanup(){ delete window[cbName]; const s = document.getElementById(cbName); if(s) s.remove(); clearTimeout(timeoutId); }
+
+  window[cbName] = function(response) {
+    cleanup(); if(btn) { btn.disabled = false; btn.textContent = "🔄 Perbarui Data Live"; }
+    if(response && response.data) {
+      ALL_REKAP_DATA = response.data;
+      const uniqueDates = new Set(); const uniqueClasses = new Set(); const uniqueMajors = new Set(); const uniqueMapels = new Set();
+      response.data.forEach(row => {
+        const dateStr = row[0] ? String(row[0]).split(',')[0].split(' ')[0] : 'Tanpa Tanggal';
+        const cls = row[2] ? String(row[2]).trim() : 'Tanpa Kelas';
+        const mjr = row[3] ? String(row[3]).trim() : 'Tanpa Jurusan';
+        if (row[0]) uniqueDates.add(dateStr); uniqueClasses.add(cls); uniqueMajors.add(mjr);
+
+        const catDetail = row[7] ? String(row[7]) : '';
+        if (catDetail) {
+           catDetail.split('|').forEach(p => {
+              const mapelName = p.split(':')[0].trim();
+              if(mapelName) uniqueMapels.add(mapelName);
+           });
+        }
+      });
+      
+      const fillSelect = (id, setItem, allText) => {
+        const el = document.getElementById(id); if(!el) return;
+        let opts = `<option value="ALL">${allText}</option>`;
+        [...setItem].sort().forEach(item => { if(item !== 'Tanpa Kelas' && item !== 'Tanpa Jurusan' && item !== 'Tanpa Tanggal') { opts += `<option value="${escapeAttr(item)}">${escapeHtml(item)}</option>`; } });
+        if(setItem.has('Tanpa Kelas')) opts += `<option value="Tanpa Kelas">Tanpa Kelas</option>`;
+        if(setItem.has('Tanpa Jurusan')) opts += `<option value="Tanpa Jurusan">Tanpa Jurusan</option>`;
+        if(setItem.has('Tanpa Tanggal')) opts += `<option value="Tanpa Tanggal">Tanpa Tanggal</option>`;
+        el.innerHTML = opts;
+      };
+
+      fillSelect('admin-filter-tanggal', uniqueDates, 'Semua Tanggal'); fillSelect('admin-filter-kelas', uniqueClasses, 'Semua Kelas'); fillSelect('admin-filter-jurusan', uniqueMajors, 'Semua Jurusan');
+      fillSelect('admin-filter-matapelajaran', uniqueMapels, 'Semua Mata Pelajaran');
+      fillSelect('guru-filter-tanggal', uniqueDates, 'Semua Tanggal'); fillSelect('guru-filter-kelas', uniqueClasses, 'Semua Kelas'); fillSelect('guru-filter-jurusan', uniqueMajors, 'Semua Jurusan');
+      fillSelect('guru-filter-matapelajaran', uniqueMapels, 'Semua Mata Pelajaran');
+
+      fetchOnlyLiveTable(tbodyId);
+      renderActiveTokens(authType === 'admin' ? 'admin' : 'guru');
+    } else { if(tbody) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:32px 0;">Data Kosong.</td></tr>'; } }
+  };
+  script.id = cbName; script.src = `${SCRIPT_URL}?action=getRekapNilai&callback=${cbName}`; document.body.appendChild(script);
+}
+
+function fetchOnlyLiveTable(tbodyId) {
+  const tbody = document.getElementById(tbodyId); const cbName = 'getLiveCb_' + Date.now(); const script = document.createElement('script');
+  window[cbName] = function(data) {
+    delete window[cbName]; script.remove();
+    if(!data || data.length === 0){ tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:32px 0;">Belum ada siswa yang mengerjakan ujian.</td></tr>'; return; }
+    tbody.innerHTML = '';
+    data.forEach(row => {
+      const tr = document.createElement('tr'); let statusClass = row.status.includes("Selesai") ? "status-selesai" : "status-mengerjakan";
+      tr.innerHTML = `<td>${row.waktu}</td><td style="font-weight:600;">${row.nama}</td><td>${row.kelas} ${row.jurusan}</td><td><b style="color:var(--gold);">${row.token}</b></td><td>${row.progres}</td><td><b>${row.skor}</b> Poin</td><td><span class="status-badge ${statusClass}">${row.status}</span></td>`;
+      tbody.appendChild(tr);
+    });
+  };
+  script.id = cbName; script.src = `${SCRIPT_URL}?action=getLiveProgress&callback=${cbName}`; document.body.appendChild(script);
+}
+
+document.getElementById('btn-admin-refresh-live').addEventListener('click', () => fetchAndPopulateFilters('admin-live-table-body', 'btn-admin-refresh-live'));
+document.getElementById('btn-guru-refresh-live').addEventListener('click', () => fetchAndPopulateFilters('guru-live-table-body', 'btn-guru-refresh-live'));
+document.getElementById('btn-admin-download-rekap').addEventListener('click', () => downloadRekapNilaiLocal('btn-admin-download-rekap', 'admin'));
+document.getElementById('btn-guru-download-rekap').addEventListener('click', () => downloadRekapNilaiLocal('btn-guru-download-rekap', 'guru'));
+
+function downloadRekapNilaiLocal(btnId, prefix) {
+  if (ALL_REKAP_DATA.length === 0) { alert("Data rekap belum termuat. Silakan tunggu beberapa detik atau klik 'Perbarui Data Live'."); return; }
+  const btn = document.getElementById(btnId); const originalText = btn.innerHTML; btn.disabled = true; btn.textContent = "⏳ Menyiapkan Excel...";
+
+  const selTanggal = document.getElementById(`${prefix}-filter-tanggal`).value;
+  const selKelas = document.getElementById(`${prefix}-filter-kelas`).value;
+  const selJurusan = document.getElementById(`${prefix}-filter-jurusan`).value;
+  const selKategori = document.getElementById(`${prefix}-filter-matapelajaran`).value.trim().toLowerCase();
+  
+  const header = ["Waktu Masuk", "Nama Lengkap", "Kelas", "Jurusan", "Skor", "Total Soal", "Persentase (%)", "Detail Rekap Mata Pelajaran", "Detail Jawaban Siswa"];
+  
+  let dataToExport = ALL_REKAP_DATA.filter(row => {
+    const rowDate = row[0] ? String(row[0]).split(',')[0].split(' ')[0] : 'Tanpa Tanggal';
+    const rowClass = row[2] ? String(row[2]).trim() : 'Tanpa Kelas';
+    const rowMajor = row[3] ? String(row[3]).trim() : 'Tanpa Jurusan';
+    const rowCatText = row[7] ? String(row[7]).toLowerCase() : '';
+    let match = true;
+    if (selTanggal !== "ALL" && rowDate !== selTanggal) match = false;
+    if (selKelas !== "ALL" && rowClass !== selKelas) match = false;
+    if (selJurusan !== "ALL" && rowMajor !== selJurusan) match = false;
+    if (selKategori !== "ALL" && !rowCatText.includes(selKategori)) match = false;
+    return match;
+  });
+
+  if (dataToExport.length === 0) { alert("Tidak ada data yang cocok dengan kriteria filter."); btn.disabled = false; btn.innerHTML = originalText; return; }
+
+  const wb = XLSX.utils.book_new(); const byClass = {};
+  dataToExport.forEach(row => { const kelas = row[2] ? String(row[2]).trim() : 'Tanpa Kelas'; if(!byClass[kelas]) byClass[kelas] = []; byClass[kelas].push(row); });
+
+  const allDataWithHeader = [header, ...dataToExport]; const wsAll = XLSX.utils.aoa_to_sheet(allDataWithHeader);
+  wsAll['!cols'] = [{wch:20}, {wch:25}, {wch:10}, {wch:15}, {wch:8}, {wch:10}, {wch:15}, {wch:45}, {wch:45}];
+  XLSX.utils.book_append_sheet(wb, wsAll, "Hasil Filter Keseluruhan");
+
+  if(Object.keys(byClass).length > 1 || selKelas === "ALL") {
+    Object.keys(byClass).forEach(kelas => {
+      let safeKelasName = kelas.replace(/[\\\/\?\*\[\]]/g, '_').substring(0, 30); if(!safeKelasName) safeKelasName = "Kelas_Unknown";
+      const classData = [header, ...byClass[kelas]]; const wsClass = XLSX.utils.aoa_to_sheet(classData);
+      wsClass['!cols'] = [{wch:20}, {wch:25}, {wch:10}, {wch:15}, {wch:8}, {wch:10}, {wch:15}, {wch:45}, {wch:45}];
+      if (safeKelasName !== "Hasil Filter Keseluruhan") { try { XLSX.utils.book_append_sheet(wb, wsClass, safeKelasName); } catch(e) {} }
+    });
+  }
+  
+  XLSX.writeFile(wb, `Rekap_Nilai_Filter_${new Date().getTime()}.xlsx`);
+  btn.disabled = false; btn.innerHTML = originalText;
+}
+
+
+// ========================
+// 6. MANAJEMEN BANK SOAL (2-WAY BINDING)
+// ========================
+window.updateQ = function(field, id, value, optIdx) {
+  const q = QUESTIONS.find(x => x.id === id); if(!q) return;
+  if(field === 'options') { q.options[optIdx] = value; } 
+  else if(field === 'correct') { q.correct = parseInt(value, 10); } 
+  else { q[field] = value; }
+};
+
+window.deleteQ = function(id) {
+  if(confirm('Hapus soal ini?')){ QUESTIONS = QUESTIONS.filter(q => q.id !== id); renderQuestionList(); }
+};
+
+function populateMapelFilterOptions(prefix){
+  const sel = document.getElementById(`${prefix}-bank-filter-mapel`); if(!sel) return;
+  const prevVal = sel.value;
+  const unique = [...new Set(QUESTIONS.map(q => (q.category || 'Mata Pelajaran').trim()).filter(Boolean))].sort();
+  let opts = `<option value="ALL">Semua Mata Pelajaran</option>`;
+  unique.forEach(cat => { opts += `<option value="${escapeAttr(cat)}">${escapeHtml(cat)}</option>`; });
+  opts += `<option value="__new__">+ Mata Pelajaran Baru...</option>`;
+  sel.innerHTML = opts;
+  if(unique.includes(prevVal) || prevVal === 'ALL') sel.value = prevVal;
+}
+
+function getBankFilter(prefix){
+  const kelasEl = document.getElementById(`${prefix}-bank-filter-kelas`);
+  const jurusanEl = document.getElementById(`${prefix}-bank-filter-jurusan`);
+  const mapelEl = document.getElementById(`${prefix}-bank-filter-mapel`);
+  return { kelas: kelasEl ? kelasEl.value : 'ALL', jurusan: jurusanEl ? jurusanEl.value : 'ALL', mapel: mapelEl ? mapelEl.value : 'ALL' };
+}
+
+window.handleMapelFilterChange = function(prefix){
+  const sel = document.getElementById(`${prefix}-bank-filter-mapel`);
+  if(sel.value === '__new__'){
+    const newMapel = prompt('Ketik nama Mata Pelajaran baru:');
+    if(newMapel && newMapel.trim()){
+      const val = newMapel.trim();
+      const existing = [...sel.options].find(o => o.value.toLowerCase() === val.toLowerCase());
+      if(existing){ sel.value = existing.value; } 
+      else { const opt = document.createElement('option'); opt.value = val; opt.textContent = val; sel.insertBefore(opt, sel.options[sel.options.length - 1]); sel.value = val; }
+    } else { sel.value = 'ALL'; }
+  }
+};
+
+// Fungsi Terapkan Filter Button
+document.getElementById('btn-admin-terapkan-filter').addEventListener('click', () => { renderQuestionList(); });
+document.getElementById('btn-guru-terapkan-filter').addEventListener('click', () => { renderQuestionList(); });
+
+function renderQuestionList() {
+  const containerId = authType === 'admin' ? 'admin-list' : 'guru-list';
+  const prefix = authType === 'admin' ? 'admin' : 'guru';
+  const list = document.getElementById(containerId); list.innerHTML = '';
+  
+  const { kelas, jurusan, mapel } = getBankFilter(prefix);
+
+  let displayedCount = 0;
+  let htmlCards = [];
+
+  QUESTIONS.forEach((q, idx) => {
+    let match = true;
+    if (authType === 'guru' && (q.guru || 'Admin') !== loggedInGuruName) match = false;
+    if (kelas !== "ALL" && (q.kelas || "") !== kelas) match = false;
+    if (jurusan !== "ALL" && (q.jurusan || "") !== jurusan) match = false;
+    if (mapel !== "ALL" && mapel !== "__new__" && (q.category || "Mata Pelajaran") !== mapel) match = false;
+    
+    if (match) { 
+       htmlCards.push(buildQuestionCard(q, idx, containerId)); 
+       displayedCount++;
+    }
+  });
+
+  // TAMBAHAN: Tampilkan Summary Jumlah Soal 
+  const summaryDiv = document.createElement('div');
+  summaryDiv.style.marginBottom = '16px';
+  summaryDiv.innerHTML = `<span style="background:var(--panel-2); color:var(--teal); padding:6px 12px; border-radius:3px; font-size:13px; font-family:'IBM Plex Mono', monospace; border:1px solid var(--line-strong);">Jumlah Soal Ditampilkan: <b style="color:var(--gold); font-size:14px;">${displayedCount}</b></span>`;
+  list.appendChild(summaryDiv);
+
+  if(displayedCount === 0) {
+     const emptyDiv = document.createElement('div');
+     emptyDiv.style.cssText = "text-align:center; padding:32px; background:var(--panel-2); border-radius:4px; border:1px dashed var(--line-strong);";
+     emptyDiv.innerHTML = `<p style="color:var(--text-dim); margin:0;">Tidak ada soal yang ditemukan untuk filter tersebut.</p>`;
+     list.appendChild(emptyDiv);
+  } else {
+     htmlCards.forEach(card => list.appendChild(card));
+  }
+}
+
+function buildQuestionCard(q, idx, containerId){
+  const card = document.createElement('div'); card.className = 'qcard-admin';
+  const isEssay = q.type === 'essay';
+  const classOpts = ["", "X", "XI", "XII"].map(c => `<option value="${c}" ${q.kelas === c ? 'selected' : ''}>${c === "" ? "--Pilih Kelas--" : c}</option>`).join('');
+  const jurOpts = ["", "TKJ", "DKV", "TSM", "ATP", "AK", "BD"].map(j => `<option value="${j}" ${q.jurusan === j ? 'selected' : ''}>${j === "" ? "--Pilih Jurusan--" : j}</option>`).join('');
+  const optsHtml = (q.options || []).map((opt, i) => `<div class="opt-edit-row"><span class="letter-tag">${LETTERS[i]}</span><input type="radio" name="correct-${q.id}" value="${i}" ${q.correct === i ? 'checked' : ''} onchange="updateQ('correct', '${q.id}', this.value)"><input type="text" class="opt-input" value="${escapeAttr(opt)}" style="flex:1;" oninput="updateQ('options', '${q.id}', this.value, ${i})"></div>`).join('');
+
+  const answerBlockHtml = isEssay ? `
+    <div class="row">
+      <div>
+        <span class="field-label">Kata kunci penilaian (pisahkan dengan koma, contoh: keseimbangan, kontras, kesatuan)</span>
+        <input type="text" class="opt-input" placeholder="kata kunci 1, kata kunci 2, ..." value="${escapeAttr(q.keywords || '')}" oninput="updateQ('keywords', '${q.id}', this.value)">
+        <p style="font-size:11px; color:var(--text-dim); margin:6px 0 0;">Sistem akan menghitung skor sementara otomatis (%) berdasarkan berapa banyak kata kunci ini muncul di jawaban siswa. Ambang lulus otomatis: <b style="color:var(--gold);">${ESSAY_PASS_THRESHOLD}%</b>. Jawaban lengkap siswa tetap tersimpan di Rekap Nilai untuk dicek ulang oleh guru.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div><span class="field-label">Kunci jawaban ideal (opsional, referensi guru saat mengoreksi)</span><textarea class="text-input" style="min-height:70px;" oninput="updateQ('idealAnswer', '${q.id}', this.value)">${escapeHtml(q.idealAnswer || '')}</textarea></div>
+    </div>
+  ` : `<div class="row"><div><span class="field-label">Pilihan jawaban (tandai yang benar)</span>${optsHtml}</div></div>`;
+
+  card.innerHTML = `
+    <div class="row">
+      <div style="max-width:160px;">
+        <span class="field-label">Tipe Soal</span>
+        <select class="filter-select" onchange="updateQ('type', '${q.id}', this.value); renderQuestionList();">
+          <option value="pg" ${!isEssay ? 'selected' : ''}>Pilihan Ganda</option>
+          <option value="essay" ${isEssay ? 'selected' : ''}>Essay</option>
+        </select>
+      </div>
+      <div style="max-width:160px;">
+        <span class="field-label">Timer Khusus (detik)</span>
+        <input type="number" class="opt-input" min="0" placeholder="Ikut default" value="${escapeAttr(q.customTimer || '')}" oninput="updateQ('customTimer', '${q.id}', this.value)">
+      </div>
+    </div>
+    <div class="row">
+      <div style="max-width:140px;">
+        <span class="field-label">Target Kelas</span>
+        <select class="filter-select" onchange="updateQ('kelas', '${q.id}', this.value)">${classOpts}</select>
+      </div>
+      <div style="max-width:160px;">
+        <span class="field-label">Target Jurusan</span>
+        <select class="filter-select" onchange="updateQ('jurusan', '${q.id}', this.value)">${jurOpts}</select>
+      </div>
+      <div style="flex:1; min-width:140px;">
+        <span class="field-label">Token Soal (Kode Akses)</span>
+        <input type="text" class="opt-input" value="${escapeAttr(q.token || 'UMUM')}" oninput="updateQ('token', '${q.id}', this.value)">
+      </div>
+      <div style="flex:1; min-width:140px;">
+        <span class="field-label">Mata Pelajaran</span>
+        <input type="text" class="opt-input" value="${escapeAttr(q.category || 'Mata Pelajaran')}" oninput="updateQ('category', '${q.id}', this.value)">
+      </div>
+    </div>
+    <div class="row">
+      <div><span class="field-label">Pertanyaan</span><textarea class="text-input" oninput="updateQ('text', '${q.id}', this.value)">${escapeHtml(q.text || '')}</textarea></div>
+    </div>
+    ${answerBlockHtml}
+    <div class="row">
+      <div>
+        <span class="field-label">Gambar soal (opsional — tempel link URL gambar, jangan upload file)</span>
+        <input type="text" class="image-url-input" placeholder="https://..." value="${escapeAttr(q.image || '')}" oninput="updateQ('image', '${q.id}', this.value); this.nextElementSibling.src=this.value; this.nextElementSibling.style.display=this.value?'block':'none';">
+        <img class="img-preview" ${q.image ? `src="${escapeAttr(q.image)}" style="display:block;"` : 'style="display:none;"'}>
+        <p style="font-size:11px; color:var(--text-dim); margin:6px 0 0;">Gunakan link gambar dari internet (misal hasil upload ke Google Drive/Imgur/dsb dengan akses publik). Upload file langsung tidak didukung karena akan membuat data terlalu besar untuk Google Sheets dan bisa menyebabkan sistem gagal terhubung.</p>
+      </div>
+    </div>
+    <div class="qcard-admin-footer">
+      <span class="qidx">Penyusun: <b style="color:var(--gold);">${q.guru || 'Admin'}</b></span>
+      <button class="btn btn-danger btn-sm" onclick="deleteQ('${q.id}')">Hapus soal ini</button>
+    </div>
+  `;
+  return card;
+}
+
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function handleAddBlankQuestion() {
+  const prefix = authType === 'admin' ? 'admin' : 'guru';
+  const { kelas, jurusan, mapel } = getBankFilter(prefix);
+  let lastToken = QUESTIONS.length > 0 ? QUESTIONS[QUESTIONS.length - 1].token : 'UMUM';
+  
+  QUESTIONS.push({ 
+    id: generateId(), text: '', image: '', options: ['', '', '', '', ''], correct: 0, 
+    category: (mapel && mapel !== 'ALL' && mapel !== '__new__') ? mapel : 'Mata Pelajaran', token: lastToken, 
+    kelas: (kelas && kelas !== 'ALL') ? kelas : '', jurusan: (jurusan && jurusan !== 'ALL') ? jurusan : '',
+    guru: loggedInGuruName || 'Admin', // TAMBAHAN: Set nama guru otomatis
+    type: 'pg', keywords: '', idealAnswer: '', customTimer: '' // TAMBAHAN: dukungan soal essay & timer khusus
+  });
+  renderQuestionList();
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+document.getElementById('btn-admin-add-question').addEventListener('click', handleAddBlankQuestion);
+document.getElementById('btn-admin-add-question-2').addEventListener('click', handleAddBlankQuestion);
+document.getElementById('btn-guru-add-question').addEventListener('click', handleAddBlankQuestion);
+document.getElementById('btn-guru-add-question-2').addEventListener('click', handleAddBlankQuestion);
+
+function handleDeleteFiltered(statusId) {
+  const prefix = authType === 'admin' ? 'admin' : 'guru';
+  const { kelas, jurusan, mapel } = getBankFilter(prefix);
+
+  let toKeep = []; let deletedCount = 0;
+  QUESTIONS.forEach(q => {
+    let match = true;
+    if (kelas !== "ALL" && (q.kelas || "") !== kelas) match = false;
+    if (jurusan !== "ALL" && (q.jurusan || "") !== jurusan) match = false;
+    if (mapel !== "ALL" && mapel !== "__new__" && (q.category || "Mata Pelajaran") !== mapel) match = false;
+    if (match) { deletedCount++; } else { toKeep.push(q); }
+  });
+
+  if(deletedCount === 0){ alert("Tidak ada soal yang cocok dengan filter untuk dihapus."); return; }
+
+  if(confirm(`Yakin MENGHAPUS ${deletedCount} SOAL yang tampil di layar saat ini?\n\n(Soal yang tersembunyi karena filter tetap aman)`)){
+    QUESTIONS = toKeep; renderQuestionList();
+    showStatus(statusId, `${deletedCount} soal dihapus. Tekan SIMPAN KE SERVER untuk menghapus permanen.`, true);
+  }
+}
+document.getElementById('btn-admin-delete-all').addEventListener('click', () => handleDeleteFiltered('admin-status'));
+document.getElementById('btn-guru-delete-all').addEventListener('click', () => handleDeleteFiltered('guru-status'));
+
+function handleImportJSON(inputId, tokenInputId, statusId) {
+  const jsonText = document.getElementById(inputId).value.trim();
+  const tokenImport = document.getElementById(tokenInputId).value.trim() || 'UMUM';
+  if(!jsonText){ showStatus(statusId, 'Kotak teks import soal masih kosong.', false); return; }
+  
+  const prefix = authType === 'admin' ? 'admin' : 'guru';
+  const { kelas, jurusan, mapel } = getBankFilter(prefix);
+  const defaultKelas = (kelas && kelas !== 'ALL') ? kelas : '';
+  const defaultJurusan = (jurusan && jurusan !== 'ALL') ? jurusan : '';
+  const defaultMapel = (mapel && mapel !== 'ALL' && mapel !== '__new__') ? mapel : 'Mata Pelajaran';
+
+  try {
+    let cleanedText = jsonText.replace(/^(const|let|var)\s+\w+\s*=\s*/, '').replace(/;$/, '');
+    const parsedData = new Function("return " + cleanedText)();
+    if(!Array.isArray(parsedData)){ throw new Error('Data bukan array'); }
+    let addedCount = 0;
+    parsedData.forEach(q => {
+      const isEssayImport = q.type === 'essay';
+      if(q.text && (isEssayImport || (q.options && Array.isArray(q.options)))){
+        QUESTIONS.push({
+          id: generateId(), text: q.text || "", image: q.image || "", options: q.options || ["", "", "", "", ""],
+          correct: q.correct !== undefined ? parseInt(q.correct) : 0, category: q.category || defaultMapel, token: q.token || tokenImport,
+          kelas: q.kelas || defaultKelas, jurusan: q.jurusan || defaultJurusan,
+          guru: q.guru || loggedInGuruName || 'Admin', // TAMBAHAN: Set nama guru otomatis
+          type: isEssayImport ? 'essay' : 'pg', keywords: q.keywords || '', idealAnswer: q.idealAnswer || '', customTimer: q.customTimer || ''
+        }); addedCount++;
+      }
+    });
+    if(addedCount > 0){
+      renderQuestionList(); document.getElementById(inputId).value = '';
+      populateMapelFilterOptions(prefix); // Refresh Mapel filter options just in case
+      showStatus(statusId, `Berhasil mengimpor ${addedCount} soal.`, true);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    } else { showStatus(statusId, 'Format data tidak sesuai.', false); }
+  } catch (err) { showStatus(statusId, 'Gagal membaca kode Javascript/JSON.', false); }
+}
+document.getElementById('btn-admin-import-json').addEventListener('click', () => handleImportJSON('admin-json-input', 'admin-import-token', 'admin-status'));
+document.getElementById('btn-guru-import-json').addEventListener('click', () => handleImportJSON('guru-json-input', 'guru-import-token', 'guru-status'));
+
+function saveQuestionsToServer(statusId, btnId) {
+  let hasError = false; let saveTitle = currentTitle; let saveTimer = currentTimer;
+
+  if (authType === 'admin') {
+    const tInput = document.getElementById('admin-title-input').value.trim();
+    const tmInput = parseInt(document.getElementById('admin-timer-input').value, 10);
+    if(tInput && !isNaN(tmInput) && tmInput >= 0) { saveTitle = tInput; saveTimer = tmInput; } 
+    else { showStatus(statusId, 'Input Judul atau Waktu ada yang tidak valid.', false); return; }
+  }
+
+  QUESTIONS.forEach(q => {
+    if(!q.text || !q.token){ hasError = true; return; }
+    if(q.type === 'essay'){ if(!q.keywords || !q.keywords.trim()){ hasError = true; } }
+    else { if((q.options || []).some(o => !o)){ hasError = true; } }
+  });
+  if(hasError){ showStatus(statusId, 'Gagal! Ada pertanyaan, token, kata kunci essay, atau pilihan PG yang kosong.', false); return; }
+
+  const btnSave = document.getElementById(btnId);
+  btnSave.disabled = true; btnSave.textContent = '⏳ Menyimpan ke Server...';
+  showStatus(statusId, 'Sedang mengirim data ke Spreadsheet...', true);
+
+  const cleanQs = QUESTIONS.map(({id, ...rest}) => rest);
+  const params = new URLSearchParams();
+  params.append('action', 'saveAdmin'); params.append('title', saveTitle); params.append('timer', saveTimer.toString());
+  params.append('questionsStr', JSON.stringify(cleanQs));
+  params.append('tokenSchedule', JSON.stringify(tokenSchedule));
+
+  fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() })
+  .then(res => res.text()).then(text => {
+    btnSave.disabled = false; btnSave.textContent = '🚀 Simpan Semua Perubahan';
+    currentTitle = saveTitle; currentTimer = saveTimer;
+    const prefix = authType === 'admin' ? 'admin' : 'guru';
+    renderTokenManager(prefix); populateMapelFilterOptions(prefix); renderActiveTokens(prefix);
+    showStatus(statusId, '✅ Semua perubahan telah tersimpan permanen di Spreadsheet.', true);
+  }).catch(err => {
+    btnSave.disabled = false; btnSave.textContent = '🚀 Simpan Semua Perubahan';
+    showStatus(statusId, '❌ Gagal terhubung ke Spreadsheet.', false);
+  });
+}
+
+document.getElementById('btn-admin-save-questions').addEventListener('click', () => saveQuestionsToServer('admin-status', 'btn-admin-save-questions'));
+document.getElementById('btn-guru-save-questions').addEventListener('click', () => saveQuestionsToServer('guru-status', 'btn-guru-save-questions'));
+
+function showStatus(elId, msg, ok){ const el = document.getElementById(elId); el.textContent = msg; el.className = 'admin-status ' + (ok ? 'ok' : 'err'); }
+</script>
+</body>
+</html>
