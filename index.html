@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -333,20 +333,35 @@
         <label for="input-jurusan">Jurusan</label>
         <select id="input-jurusan">
           <option value="" disabled selected>-- Pilih Jurusan --</option>
-          <option value="TKJ">TKJ 1</option>
-		   <option value="TKJ">TKJ 2</option>
-		    <option value="TKJ">TKJ 3</option>
-          <option value="TSM">TSM</option>
-		   <option value="TSM">TSM 1</option>
-		    <option value="TSM">TSM 2</option>
-          <option value="ATP">ATP</option>
-		  <option value="ATP">ATP 1</option>
-		  <option value="ATP">ATP 2</option>
-          <option value="AK">AK</option>
-		   <option value="AK">AK 1</option>
-		    <option value="AK">AK 2</option>
-			 <option value="DKV">DKV</option>
-          <option value="BD">BD</option>
+          
+          <optgroup label="Teknik Komputer Jaringan">
+            <option value="TKJ 1">TKJ 1</option>
+            <option value="TKJ 2">TKJ 2</option>
+            <option value="TKJ 3">TKJ 3</option>
+          </optgroup>
+
+          <optgroup label="Teknik Sepeda Motor">
+            <option value="TSM">TSM (Umum)</option>
+            <option value="TSM 1">TSM 1</option>
+            <option value="TSM 2">TSM 2</option>
+          </optgroup>
+
+          <optgroup label="Agribisnis Tanaman Perkebunan">
+            <option value="ATP">ATP (Umum)</option>
+            <option value="ATP 1">ATP 1</option>
+            <option value="ATP 2">ATP 2</option>
+          </optgroup>
+
+          <optgroup label="Akuntansi">
+            <option value="AK">AK (Umum)</option>
+            <option value="AK 1">AK 1</option>
+            <option value="AK 2">AK 2</option>
+          </optgroup>
+
+          <optgroup label="Jurusan Lainnya">
+            <option value="DKV">DKV</option>
+            <option value="BD">BD</option>
+          </optgroup>
         </select>
       </div>
       <div class="id-field">
@@ -357,9 +372,6 @@
 
     <p class="id-error" id="id-error"></p>
     <button class="btn" id="btn-start">Mulai kuis</button>
-    <footer style="margin-top:32px; padding-top:20px; border-top:1px solid var(--line); font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim);">
-      <p style="margin:0;">&copy; 2026 BNZexm. Hak Cipta Dilindungi. | Ruben Gideon</p>
-    </footer>
   </div>
 
   <!-- == QUIZ SCREEN == -->
@@ -554,14 +566,16 @@ document.getElementById('btn-start').addEventListener('click', () => {
       }
   }
 
-  // VALIDASI KELAS DAN JURUSAN
+  // VALIDASI KELAS DAN JURUSAN (SUDAH DIPERBAIKI)
   const targetQ = filteredQs[0];
-  if (targetQ.kelas && targetQ.kelas !== kelas) {
+  
+  if (targetQ.kelas && targetQ.kelas.toUpperCase() !== kelas.toUpperCase()) {
     err.textContent = `Akses Ditolak: Kode token ini khusus untuk Kelas ${targetQ.kelas}.`;
     return;
   }
-  if (targetQ.jurusan && targetQ.jurusan !== jurusan) {
-    err.textContent = `Akses Ditolak: Kode token ini khusus untuk Jurusan ${targetQ.jurusan}.`;
+  
+  if (targetQ.jurusan && !jurusan.toUpperCase().includes(targetQ.jurusan.toUpperCase())) {
+    err.textContent = `Akses Ditolak: Kode token ini khusus untuk kelompok Jurusan ${targetQ.jurusan}.`;
     return;
   }
 
@@ -829,8 +843,6 @@ document.getElementById('btn-download').addEventListener('click', () => {
   XLSX.utils.book_append_sheet(wb, wsRingkasan, 'Ringkasan'); XLSX.utils.book_append_sheet(wb, wsDetail, 'Detail Jawaban');
   XLSX.writeFile(wb, `Hasil_Kuis_${studentName.replace(/[^a-z0-9]+/gi, '_')}_${studentClass}.xlsx`);
 });
-
-// ========================
 </script>
 </body>
 </html>
