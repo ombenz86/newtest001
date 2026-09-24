@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -76,8 +76,8 @@
     font-size:13px; color:var(--text-dim); margin-bottom:36px; flex-wrap:wrap;
   }
   .meta-row span b{color:var(--gold); font-weight:500;}
-  .id-form{display:flex; gap:12px; max-width:500px; margin:0 auto 12px; flex-wrap:wrap;}
-  .id-field{flex:1; min-width:200px; text-align:left;}
+  .id-form{display:flex; flex-direction:column; gap:16px; max-width:420px; margin:0 auto 16px;}
+  .id-field{width:100%; text-align:left;}
   .id-field label{
     display:block; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em;
     text-transform:uppercase; color:var(--text-dim); margin-bottom:6px;
@@ -333,35 +333,20 @@
         <label for="input-jurusan">Jurusan</label>
         <select id="input-jurusan">
           <option value="" disabled selected>-- Pilih Jurusan --</option>
-          
-          <optgroup label="Teknik Komputer Jaringan">
-            <option value="TKJ 1">TKJ 1</option>
-            <option value="TKJ 2">TKJ 2</option>
-            <option value="TKJ 3">TKJ 3</option>
-          </optgroup>
-
-          <optgroup label="Teknik Sepeda Motor">
-            <option value="TSM">TSM (Umum)</option>
-            <option value="TSM 1">TSM 1</option>
-            <option value="TSM 2">TSM 2</option>
-          </optgroup>
-
-          <optgroup label="Agribisnis Tanaman Perkebunan">
-            <option value="ATP">ATP (Umum)</option>
-            <option value="ATP 1">ATP 1</option>
-            <option value="ATP 2">ATP 2</option>
-          </optgroup>
-
-          <optgroup label="Akuntansi">
-            <option value="AK">AK (Umum)</option>
-            <option value="AK 1">AK 1</option>
-            <option value="AK 2">AK 2</option>
-          </optgroup>
-
-          <optgroup label="Jurusan Lainnya">
-            <option value="DKV">DKV</option>
-            <option value="BD">BD</option>
-          </optgroup>
+          <option value="TKJ">TKJ 1</option>
+		   <option value="TKJ">TKJ 2</option>
+		    <option value="TKJ">TKJ 3</option>
+          <option value="TSM">TSM</option>
+		   <option value="TSM">TSM 1</option>
+		    <option value="TSM">TSM 2</option>
+          <option value="ATP">ATP</option>
+		  <option value="ATP">ATP 1</option>
+		  <option value="ATP">ATP 2</option>
+          <option value="AK">AK</option>
+		   <option value="AK">AK 1</option>
+		    <option value="AK">AK 2</option>
+			 <option value="DKV">DKV</option>
+          <option value="BD">BD</option>
         </select>
       </div>
       <div class="id-field">
@@ -550,7 +535,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
   if(filteredQs.length === 0){ err.textContent = 'Kode Token salah atau tidak ada soal untuk ujian tersebut.'; return; }
 
   // VALIASI JADWAL DAN STATUS TOKEN
-  const sched = tokenSchedule[token] || { status: 'aktif', tanggal: '' };
+  const sched = tokenSchedule[token] || { status: 'aktif', tanggal: '', jamMulai: '', jamAkhir: '' };
   if (sched.status === 'nonaktif') {
       err.textContent = 'Akses Ditolak: Ujian untuk token ini sedang dinonaktifkan oleh Guru/Admin.'; 
       return;
@@ -565,17 +550,28 @@ document.getElementById('btn-start').addEventListener('click', () => {
           return;
       }
   }
+  // VALIDASI JAM MULAI & JAM AKHIR (format HH:MM)
+  if (sched.jamMulai || sched.jamAkhir) {
+      const nowT = new Date();
+      const nowStr = String(nowT.getHours()).padStart(2, '0') + ":" + String(nowT.getMinutes()).padStart(2, '0');
+      if (sched.jamMulai && nowStr < sched.jamMulai) {
+          err.textContent = `Akses Ditolak: Ujian belum dimulai. Ujian dibuka pukul ${sched.jamMulai}.`;
+          return;
+      }
+      if (sched.jamAkhir && nowStr > sched.jamAkhir) {
+          err.textContent = `Akses Ditolak: Waktu ujian sudah berakhir (ditutup pukul ${sched.jamAkhir}).`;
+          return;
+      }
+  }
 
-  // VALIDASI KELAS DAN JURUSAN (SUDAH DIPERBAIKI)
+  // VALIDASI KELAS DAN JURUSAN
   const targetQ = filteredQs[0];
-  
-  if (targetQ.kelas && targetQ.kelas.toUpperCase() !== kelas.toUpperCase()) {
+  if (targetQ.kelas && targetQ.kelas !== kelas) {
     err.textContent = `Akses Ditolak: Kode token ini khusus untuk Kelas ${targetQ.kelas}.`;
     return;
   }
-  
-  if (targetQ.jurusan && !jurusan.toUpperCase().includes(targetQ.jurusan.toUpperCase())) {
-    err.textContent = `Akses Ditolak: Kode token ini khusus untuk kelompok Jurusan ${targetQ.jurusan}.`;
+  if (targetQ.jurusan && targetQ.jurusan !== jurusan) {
+    err.textContent = `Akses Ditolak: Kode token ini khusus untuk Jurusan ${targetQ.jurusan}.`;
     return;
   }
 
@@ -843,6 +839,8 @@ document.getElementById('btn-download').addEventListener('click', () => {
   XLSX.utils.book_append_sheet(wb, wsRingkasan, 'Ringkasan'); XLSX.utils.book_append_sheet(wb, wsDetail, 'Detail Jawaban');
   XLSX.writeFile(wb, `Hasil_Kuis_${studentName.replace(/[^a-z0-9]+/gi, '_')}_${studentClass}.xlsx`);
 });
+
+// ========================
 </script>
 </body>
 </html>
