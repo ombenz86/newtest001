@@ -2,18 +2,17 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title id="doc-title">Kuis Interaktif</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://script.google.com">
 <link rel="preconnect" href="https://script.googleusercontent.com">
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#10161d;
-    --bg-grid: rgba(201,162,39,0.07);
+    --bg-grid: rgba(201,162,39,0.05);
     --panel:#161f28;
     --panel-2:#1c2731;
     --gold:#c9a227;
@@ -24,89 +23,108 @@
     --text-dim:#93a3b0;
     --line: rgba(241,236,221,0.10);
     --line-strong: rgba(241,236,221,0.18);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0; min-height:100dvh;}
   body{
     background:
-      linear-gradient(var(--bg-grid) 1px, transparent 1px) 0 0/40px 40px,
-      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(var(--bg-grid) 1px, transparent 1px) 0 0/32px 32px,
+      linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px) 0 0/32px 32px,
       var(--bg);
     color:var(--text);
-    font-family:'IBM Plex Sans', sans-serif;
-    min-height:100vh;
+    font-family:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     display:flex;
     align-items:flex-start;
     justify-content:center;
-    padding:48px 20px;
+    padding:32px 16px;
+    contain: content;
   }
-  .wrap{width:100%; max-width:800px;}
+  .wrap{width:100%; max-width:800px; position:relative;}
   h1,h2,h3{font-family:'Fraunces', serif; font-weight:600; margin:0;}
   .eyebrow{
     font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.12em;
     text-transform:uppercase; color:var(--gold); margin:0 0 10px;
   }
   .btn{
-    font-family:'IBM Plex Sans', sans-serif; font-size:15px; font-weight:500;
-    color:var(--bg); background:var(--gold); border:none; border-radius:2px;
-    padding:14px 28px; cursor:pointer; transition: transform .12s ease, background .12s ease;
+    font-family:'IBM Plex Sans', sans-serif; font-size:15px; font-weight:600;
+    color:var(--bg); background:var(--gold); border:none; border-radius:4px;
+    padding:14px 28px; min-height:48px; cursor:pointer; 
+    transition: transform 0.15s var(--ease-out), background 0.15s var(--ease-out), opacity 0.15s ease;
+    display:inline-flex; align-items:center; justify-content:center;
+    transform: translateZ(0); will-change: transform;
   }
   .btn:hover{background:#dcb42f;}
-  .btn:active{transform:scale(0.98);}
-  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .btn:active{transform:scale(0.97);}
+  .btn:disabled{opacity:0.5; cursor:not-allowed; transform:none;}
   .btn-ghost{background:transparent; color:var(--text); border:1px solid var(--line-strong);}
   .btn-ghost:hover{background:var(--panel-2); border-color:var(--gold-dim);}
   .btn-danger{background:transparent; color:var(--rose); border:1px solid rgba(193,87,63,0.4);}
   .btn-danger:hover{background:rgba(193,87,63,0.1);}
-  .btn-sm{padding:8px 14px; font-size:13px;}
+  .btn-sm{padding:8px 16px; min-height:36px; font-size:13px;}
 
   .link-btn{
     background:none; border:none; color:var(--text-dim); font-family:'IBM Plex Mono', monospace;
-    font-size:12px; cursor:pointer; text-decoration:underline; text-underline-offset:3px;
+    font-size:12px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; padding:6px;
   }
   .link-btn:hover{color:var(--gold);}
 
+  /* SCREEN ANIMATION WRAPPER */
+  .screen-panel {
+    background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:40px 32px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    opacity: 1; transform: translateY(0) translateZ(0);
+    transition: opacity 0.22s var(--ease-out), transform 0.22s var(--ease-out);
+    will-change: opacity, transform;
+  }
+  .screen-panel.hidden {
+    display: none !important;
+    opacity: 0;
+    transform: translateY(10px) translateZ(0);
+  }
+
   /* START SCREEN */
-  #screen-start{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:56px 48px; text-align:center;}
-  .spiral{margin:0 auto 28px; display:block;}
-  #screen-start h1{font-size:32px; line-height:1.25; margin-bottom:14px;}
-  #screen-start p.sub{color:var(--text-dim); font-size:15px; line-height:1.65; max-width:480px; margin:0 auto 32px;}
+  #screen-start{text-align:center;}
+  .spiral{margin:0 auto 24px; display:block; filter: drop-shadow(0 2px 8px rgba(201,162,39,0.15));}
+  #screen-start h1{font-size:28px; line-height:1.3; margin-bottom:12px;}
+  #screen-start p.sub{color:var(--text-dim); font-size:14px; line-height:1.6; max-width:500px; margin:0 auto 28px;}
   .meta-row{
-    display:flex; justify-content:center; gap:32px; font-family:'IBM Plex Mono', monospace;
-    font-size:13px; color:var(--text-dim); margin-bottom:36px; flex-wrap:wrap;
+    display:flex; justify-content:center; gap:24px; font-family:'IBM Plex Mono', monospace;
+    font-size:13px; color:var(--text-dim); margin-bottom:32px; flex-wrap:wrap;
   }
   .meta-row span b{color:var(--gold); font-weight:500;}
-  .id-form{display:flex; flex-direction:column; gap:16px; max-width:420px; margin:0 auto 16px;}
+  .id-form{display:flex; flex-direction:column; gap:16px; max-width:440px; margin:0 auto 16px;}
   .id-field{width:100%; text-align:left;}
   .id-field label{
     display:block; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em;
     text-transform:uppercase; color:var(--text-dim); margin-bottom:6px;
   }
   .id-field input, .id-field select {
-    width:100%; background:var(--panel-2); border:1px solid var(--line-strong); border-radius:2px;
-    color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:15px; padding:11px 12px;
+    width:100%; background:var(--panel-2); border:1px solid var(--line-strong); border-radius:4px;
+    color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:15px; padding:12px 14px; min-height:48px;
+    transition: border-color 0.15s ease;
   }
-  .id-field input:focus, .id-field select:focus {outline:none; border-color:var(--gold-dim);}
-  .id-error{color:var(--rose); font-size:13px; font-family:'IBM Plex Mono', monospace; height:18px; margin:0 0 20px; text-align:center;}
-  .admin-entry{margin-top:28px; padding-top:20px; border-top:1px solid var(--line);}
+  .id-field input:focus, .id-field select:focus {outline:none; border-color:var(--gold);}
+  .id-error{color:var(--rose); font-size:13px; font-family:'IBM Plex Mono', monospace; min-height:18px; margin:0 0 16px; text-align:center;}
 
   /* RULER PROGRESS */
-  .ruler{position:relative; height:34px; margin-bottom:28px;}
-  .ruler-track{position:absolute; top:16px; left:0; right:0; height:1px; background:var(--line-strong);}
-  .ruler-fill{position:absolute; top:16px; left:0; height:1px; background:var(--gold); transition:width .3s ease;}
+  .ruler{position:relative; height:34px; margin-bottom:24px;}
+  .ruler-track{position:absolute; top:16px; left:0; right:0; height:2px; background:var(--line-strong); border-radius:1px;}
+  .ruler-fill{position:absolute; top:16px; left:0; height:2px; background:var(--gold); transition:width .25s var(--ease-out); border-radius:1px;}
   .ruler-ticks{position:absolute; top:0; left:0; right:0; height:34px; display:flex; justify-content:space-between;}
-  .tick{width:1px; background:var(--line); height:8px; margin-top:12px;}
+  .tick{width:1px; background:var(--line); height:8px; margin-top:13px;}
   .ruler-head{
-    position:absolute; top:0; width:30px; height:30px; margin-left:-15px; background:var(--gold);
+    position:absolute; top:1px; width:30px; height:30px; margin-left:-15px; background:var(--gold);
     color:var(--bg); border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; transition:left .3s ease;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600; transition:left .25s var(--ease-out);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
 
-  .quiz-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; flex-wrap:wrap; gap:6px;}
+  .quiz-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;}
   .qnum{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim);}
   .qcat{
     font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
-    color:var(--teal); border:1px solid rgba(79,165,152,0.35); border-radius:2px; padding:3px 8px;
+    color:var(--teal); border:1px solid rgba(79,165,152,0.35); border-radius:4px; padding:4px 10px;
   }
   
   /* TIMER STYLES */
@@ -116,44 +134,46 @@
   }
   .timer-badge b{color:var(--teal); transition: color 0.3s ease; font-size:14px;}
   .timer-badge.warning b{color:var(--rose); animation: blink 1s infinite;}
-  @keyframes blink { 50% { opacity: 0.5; } }
+  @keyframes blink { 50% { opacity: 0.4; } }
 
   .score-badge{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim);}
   .score-badge b{color:var(--gold);}
 
   /* QUESTION CARD */
-  #screen-quiz .card{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:32px 32px 24px; margin-bottom:24px;}
-  .qimg{width:100%; max-height:320px; object-fit:contain; border-radius:3px; margin-bottom:20px; background:var(--panel-2); display:block;}
-  .qtext{font-family:'Fraunces', serif; font-size:20px; line-height:1.5; font-weight:500; margin:0 0 24px;}
-  .options{display:flex; flex-direction:column; gap:10px;}
+  #screen-quiz .card{background:var(--panel-2); border:1px solid var(--line); border-radius:6px; padding:28px; margin-bottom:20px;}
+  .qimg{width:100%; max-height:300px; object-fit:contain; border-radius:4px; margin-bottom:20px; background:var(--bg); display:block;}
+  .qtext{font-family:'Fraunces', serif; font-size:19px; line-height:1.55; font-weight:500; margin:0 0 24px;}
+  .options{display:flex; flex-direction:column; gap:12px;}
   .opt{
     display:flex; align-items:flex-start; gap:14px; padding:14px 16px; border:1px solid var(--line-strong);
-    border-radius:3px; cursor:pointer; text-align:left; background:transparent; color:var(--text);
-    font-family:'IBM Plex Sans', sans-serif; font-size:15px; line-height:1.5;
-    transition: border-color .12s ease, background .12s ease; width:100%;
+    border-radius:4px; cursor:pointer; text-align:left; background:var(--panel); color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif; font-size:15px; line-height:1.5; min-height:48px;
+    transition: border-color .15s ease, background-color .15s ease, opacity .15s ease, transform .1s ease; 
+    width:100%; transform: translateZ(0); will-change: background-color, border-color;
   }
   .opt:hover:not(.locked){border-color:var(--gold-dim); background:var(--panel-2);}
+  .opt:active:not(.locked){transform:scale(0.99);}
   .opt .letter{
-    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; width:22px; height:22px;
-    min-width:22px; border-radius:50%; border:1px solid var(--line-strong); display:flex;
-    align-items:center; justify-content:center; color:var(--text-dim);
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; width:24px; height:24px;
+    min-width:24px; border-radius:50%; border:1px solid var(--line-strong); display:flex;
+    align-items:center; justify-content:center; color:var(--text-dim); margin-top: 1px;
   }
-  .opt.correct{border-color:var(--teal); background:rgba(79,165,152,0.10);}
-  .opt.correct .letter{border-color:var(--teal); color:var(--teal); background:rgba(79,165,152,0.15);}
-  .opt.wrong{border-color:var(--rose); background:rgba(193,87,63,0.10);}
-  .opt.wrong .letter{border-color:var(--rose); color:var(--rose); background:rgba(193,87,63,0.15);}
-  .opt.dim{opacity:0.45;}
+  .opt.correct{border-color:var(--teal); background:rgba(79,165,152,0.12);}
+  .opt.correct .letter{border-color:var(--teal); color:var(--teal); background:rgba(79,165,152,0.2);}
+  .opt.wrong{border-color:var(--rose); background:rgba(193,87,63,0.12);}
+  .opt.wrong .letter{border-color:var(--rose); color:var(--rose); background:rgba(193,87,63,0.2);}
+  .opt.dim{opacity:0.4;}
 
   /* ESSAY ANSWER BOX */
   .essay-box{display:flex; flex-direction:column; gap:12px;}
   .essay-textarea{
-    width:100%; min-height:160px; background:var(--panel-2); border:1px solid var(--line-strong); border-radius:3px;
-    color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:15px; line-height:1.6; padding:14px 16px; resize:vertical;
+    width:100%; min-height:140px; background:var(--panel); border:1px solid var(--line-strong); border-radius:4px;
+    color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:15px; line-height:1.6; padding:14px; resize:vertical;
   }
-  .essay-textarea:focus{outline:none; border-color:var(--gold-dim);}
+  .essay-textarea:focus{outline:none; border-color:var(--gold);}
   .essay-textarea:disabled{opacity:0.7;}
   .essay-hint{font-size:12px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace;}
-  .essay-feedback{padding:14px 16px; border-radius:3px; border:1px solid var(--line-strong); background:var(--panel-2); font-size:13px; color:var(--text-dim);}
+  .essay-feedback{padding:14px; border-radius:4px; border:1px solid var(--line-strong); background:var(--panel); font-size:13px; color:var(--text-dim);}
   .essay-feedback b{color:var(--gold);}
 
   .quiz-footer{display:flex; justify-content:flex-end;}
@@ -161,20 +181,20 @@
   .quiz-footer .btn.show{opacity:1; pointer-events:auto;}
 
   /* RESULT SCREEN */
-  #screen-result .card{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:40px;}
-  .score-hero{text-align:center; padding-bottom:28px; border-bottom:1px solid var(--line); margin-bottom:28px;}
-  .score-hero .big{font-family:'IBM Plex Mono', monospace; font-size:56px; font-weight:600; color:var(--gold); line-height:1;}
+  #screen-result .card{background:var(--panel-2); border:1px solid var(--line); border-radius:6px; padding:32px;}
+  .score-hero{text-align:center; padding-bottom:24px; border-bottom:1px solid var(--line); margin-bottom:24px;}
+  .score-hero .big{font-family:'IBM Plex Mono', monospace; font-size:52px; font-weight:600; color:var(--gold); line-height:1;}
   .score-hero .pct{color:var(--text-dim); font-size:14px; margin-top:8px; font-family:'IBM Plex Mono', monospace;}
-  .score-hero .msg{font-family:'Fraunces', serif; font-size:19px; margin-top:16px;}
-  .student-line{text-align:center; font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim); margin-top:10px;}
+  .score-hero .msg{font-family:'Fraunces', serif; font-size:18px; margin-top:14px;}
+  .student-line{text-align:center; font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--text-dim); margin-top:8px;}
   .student-line b{color:var(--text);}
 
   .cat-row{margin-bottom:14px;}
   .cat-row .cat-label{display:flex; justify-content:space-between; font-size:13px; color:var(--text-dim); font-family:'IBM Plex Mono', monospace; margin-bottom:6px;}
-  .cat-bar-track{height:6px; background:var(--panel-2); border-radius:3px; overflow:hidden;}
-  .cat-bar-fill{height:100%; background:var(--teal); border-radius:3px;}
+  .cat-bar-track{height:6px; background:var(--bg); border-radius:3px; overflow:hidden;}
+  .cat-bar-fill{height:100%; background:var(--teal); border-radius:3px; transition: width 0.5s var(--ease-out);}
 
-  .review-toggle{margin-top:28px; text-align:center;}
+  .review-toggle{margin-top:24px; text-align:center;}
   #review-list{display:none; margin-top:20px;}
   #review-list.show{display:block;}
   .review-item{padding:16px 0; border-top:1px solid var(--line);}
@@ -185,106 +205,21 @@
   .review-item .ra.right{color:var(--teal);}
   .review-item .ra.timeout{color:var(--gold);}
 
-  .result-actions{display:flex; justify-content:center; gap:12px; margin-top:32px; flex-wrap:wrap;}
+  .result-actions{display:flex; justify-content:center; gap:12px; margin-top:28px; flex-wrap:wrap;}
   .hidden{display:none !important;}
-  @keyframes fadeInUp{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-  .wrap > div:not(.hidden){ animation: fadeInUp .22s ease; }
-  .opt{ transition: background-color .12s ease, border-color .12s ease, opacity .12s ease; }
-  .btn{ transition: opacity .12s ease, transform .1s ease; }
-  .btn:active{ transform: scale(0.98); }
-
-  /* MODAL (admin/guru login) */
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(8,11,15,0.72); display:flex; align-items:center;
-    justify-content:center; z-index:50; padding:20px;
-  }
-  .modal-box{
-    background:var(--panel); border:1px solid var(--line-strong); border-radius:4px; padding:32px;
-    max-width:360px; width:100%; text-align:center;
-  }
-  .modal-box h3{font-size:18px; margin-bottom:8px;}
-  .modal-box p{color:var(--text-dim); font-size:13px; margin:0 0 20px;}
-  .modal-box input, .modal-box select {
-    width:100%; background:var(--panel-2); border:1px solid var(--line-strong); border-radius:2px;
-    color:var(--text); font-family:'IBM Plex Mono', monospace; font-size:15px; padding:11px 12px; margin-bottom:12px;
-  }
-  .modal-box input:focus, .modal-box select:focus {outline:none; border-color:var(--gold-dim);}
-  .modal-actions{display:flex; gap:10px; justify-content:center; margin-top:6px;}
-
-  /* PANELS */
-  #screen-admin, #screen-guru {background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:32px;}
-  .admin-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:10px;}
-  
-  .admin-nav{display:flex; gap:10px; margin-bottom:24px; border-bottom:1px solid var(--line-strong); padding-bottom:12px; flex-wrap:wrap;}
-  .nav-btn{background:transparent; border:none; color:var(--text-dim); font-size:14px; font-weight:500; cursor:pointer; padding:8px 16px; border-radius:3px;}
-  .nav-btn.active{background:var(--panel-2); color:var(--gold); border:1px solid var(--line-strong);}
-  .nav-btn:hover:not(.active){background:var(--panel-2);}
-
-  .admin-status{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); margin-bottom:20px; min-height:16px;}
-  .admin-status.ok{color:var(--teal);}
-  .admin-status.err{color:var(--rose);}
-  .admin-toolbar{display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;}
-  
-  .admin-settings-box { background: var(--panel-2); border: 1px solid var(--line-strong); border-radius: 3px; padding: 16px 20px; margin-bottom: 24px; }
-  .admin-settings-box label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
-  .admin-settings-box input, .admin-settings-box textarea { width: 100%; background: var(--panel); border: 1px solid var(--line-strong); border-radius: 2px; color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 14px; padding: 9px 12px; }
-  .admin-settings-box textarea { min-height: 100px; resize: vertical; }
-  .admin-settings-box input:focus, .admin-settings-box textarea:focus { outline: none; border-color: var(--gold-dim); }
-
-  /* FILTER GRID */
-  .filter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    background: var(--bg);
-    padding: 16px;
-    border-radius: 4px;
-    border: 1px solid var(--line-strong);
-    margin-bottom: 16px;
-  }
-  .filter-item { display: flex; flex-direction: column; gap: 6px; }
-  .filter-item label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
-  select.filter-select, input.filter-select { 
-    background: var(--panel-2); border: 1px solid var(--line-strong); color: var(--text); 
-    font-family: 'IBM Plex Mono', monospace; padding: 8px 12px; border-radius: 2px; 
-    outline: none; font-size: 13px; width: 100%; box-sizing: border-box;
-  }
-  select.filter-select:focus, input.filter-select:focus { border-color: var(--gold-dim); }
-
-  .qcard-admin{ border:1px solid var(--line-strong); border-radius:3px; padding:20px; margin-bottom:16px; background:var(--panel-2); }
-  .qcard-admin .row{display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
-  .qcard-admin .row > div{flex:1; min-width:140px;}
-  .field-label{ display:block; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dim); margin-bottom:4px; }
-  .qcard-admin input[type=text], .qcard-admin textarea, .qcard-admin select { width:100%; background:var(--panel); border:1px solid var(--line-strong); border-radius:2px; color:var(--text); font-family:'IBM Plex Sans', sans-serif; font-size:14px; padding:9px 10px; }
-  .qcard-admin select {font-family:'IBM Plex Mono', monospace; font-size:13px; padding:8px;}
-  .qcard-admin textarea{resize:vertical; min-height:52px;}
-  .opt-edit-row{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
-  .opt-edit-row input[type=radio]{accent-color:var(--gold); width:16px; height:16px; flex:none;}
-  .opt-edit-row .letter-tag{ font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim); width:16px; flex:none; }
-  .qcard-admin-footer{display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line-strong);}
-  .qcard-admin-footer .qidx{font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim);}
-  
-  /* TAB LIVE PROGRESS & GURU */
-  .live-table-wrapper { width: 100%; overflow-x: auto; margin-top: 16px; }
-  .live-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-  .live-table th { font-family: 'IBM Plex Mono', monospace; color: var(--text-dim); padding: 12px; border-bottom: 1px solid var(--line-strong); font-weight: 500; white-space: nowrap; }
-  .live-table td { padding: 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-  .live-table tr:hover { background: var(--panel-2); }
-  .status-badge { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; }
-  .status-mengerjakan { background: rgba(201,162,39,0.15); color: var(--gold); border: 1px solid rgba(201,162,39,0.3); }
-  .status-selesai { background: rgba(79,165,152,0.15); color: var(--teal); border: 1px solid rgba(79,165,152,0.3); }
-  .token-badge { display: inline-block; background: rgba(79,165,152,0.15); color: var(--teal); border: 1px solid rgba(79,165,152,0.3); padding: 6px 12px; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600; }
 
   /* LOADING OVERLAY */
-  .loader-overlay{ position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:100; flex-direction:column; }
-  .spinner{ width:40px; height:40px; border:3px solid var(--line-strong); border-top-color:var(--gold); border-radius:50%; animation:spin 1s linear infinite; margin-bottom:16px; }
+  .loader-overlay{ position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:100; flex-direction:column; transition: opacity 0.2s ease; }
+  .spinner{ width:36px; height:36px; border:3px solid var(--line-strong); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  @media (max-width:520px){
-    #screen-start{padding:40px 24px;}
-    #screen-quiz .card{padding:24px 20px;}
-    #screen-admin, #screen-guru{padding:20px;}
-    .live-table-wrapper { font-size: 11px; }
+  @media (max-width:600px){
+    body{padding:16px 10px;}
+    .screen-panel{padding:28px 18px; border-radius:6px;}
+    #screen-start h1{font-size:22px;}
+    #screen-quiz .card{padding:20px 16px;}
+    .result-actions .btn{width:100%;}
+    .meta-row{gap:12px; font-size:12px;}
   }
 </style>
 </head>
@@ -297,11 +232,11 @@
 
 <div class="wrap">
   <!-- == START SCREEN == -->
-  <div id="screen-start" class="hidden">
-    <svg class="spiral" width="96" height="96" viewBox="0 0 96 96" fill="none">
-      <path d="M60 36 A24 24 0 0 1 36 60 A12 12 0 0 1 24 48 A6 6 0 0 1 30 42 A3 3 0 0 1 33 45" stroke="#c9a227" stroke-width="1.4" fill="none"/>
-      <rect x="12" y="12" width="72" height="72" rx="2" stroke="#c9a227" stroke-opacity="0.35" stroke-width="1"/>
-      <rect x="36" y="12" width="48" height="48" rx="2" stroke="#c9a227" stroke-opacity="0.35" stroke-width="1"/>
+  <div id="screen-start" class="screen-panel hidden">
+    <svg class="spiral" width="80" height="80" viewBox="0 0 96 96" fill="none">
+      <path d="M60 36 A24 24 0 0 1 36 60 A12 12 0 0 1 24 48 A6 6 0 0 1 30 42 A3 3 0 0 1 33 45" stroke="#c9a227" stroke-width="1.6" fill="none"/>
+      <rect x="12" y="12" width="72" height="72" rx="4" stroke="#c9a227" stroke-opacity="0.35" stroke-width="1"/>
+      <rect x="36" y="12" width="48" height="48" rx="4" stroke="#c9a227" stroke-opacity="0.35" stroke-width="1"/>
       <rect x="36" y="36" width="24" height="24" rx="2" stroke="#c9a227" stroke-opacity="0.35" stroke-width="1"/>
     </svg>
     <p class="eyebrow">Kuis Interaktif</p>
@@ -333,19 +268,16 @@
         <label for="input-jurusan">Jurusan</label>
         <select id="input-jurusan">
           <option value="" disabled selected>-- Pilih Jurusan --</option>
-          <option value="TKJ">TKJ 1</option>
-		   <option value="TKJ">TKJ 2</option>
-		    <option value="TKJ">TKJ 3</option>
-          <option value="TSM">TSM</option>
-		   <option value="TSM">TSM 1</option>
-		    <option value="TSM">TSM 2</option>
-          <option value="ATP">ATP</option>
-		  <option value="ATP">ATP 1</option>
-		  <option value="ATP">ATP 2</option>
-          <option value="AK">AK</option>
-		   <option value="AK">AK 1</option>
-		    <option value="AK">AK 2</option>
-			 <option value="DKV">DKV</option>
+          <option value="TKJ 1">TKJ 1</option>
+          <option value="TKJ 2">TKJ 2</option>
+          <option value="TKJ 3">TKJ 3</option>
+          <option value="TSM 1">TSM 1</option>
+          <option value="TSM 2">TSM 2</option>
+          <option value="ATP 1">ATP 1</option>
+          <option value="ATP 2">ATP 2</option>
+          <option value="AK 1">AK 1</option>
+          <option value="AK 2">AK 2</option>
+          <option value="DKV">DKV</option>
           <option value="BD">BD</option>
         </select>
       </div>
@@ -356,11 +288,11 @@
     </div>
 
     <p class="id-error" id="id-error"></p>
-    <button class="btn" id="btn-start">Mulai kuis</button>
+    <button class="btn" id="btn-start">Mulai Kuis</button>
   </div>
 
   <!-- == QUIZ SCREEN == -->
-  <div id="screen-quiz" class="hidden">
+  <div id="screen-quiz" class="screen-panel hidden">
     <div class="ruler">
       <div class="ruler-track"></div>
       <div class="ruler-fill" id="ruler-fill"></div>
@@ -374,7 +306,7 @@
       <span class="score-badge">Skor <b id="score-live">0</b></span>
     </div>
     <div class="card">
-      <img class="qimg hidden" id="qimg" alt="Gambar soal" loading="eager" decoding="async">
+      <img class="qimg hidden" id="qimg" alt="Gambar soal" loading="lazy" decoding="async">
       <p class="qtext" id="qtext"></p>
       <div class="options" id="options"></div>
     </div>
@@ -384,19 +316,19 @@
   </div>
 
   <!-- == RESULT SCREEN == -->
-  <div id="screen-result" class="hidden">
+  <div id="screen-result" class="screen-panel hidden">
     <div class="card">
       <div class="score-hero">
-        <p class="eyebrow" style="text-align:center;">Hasil kuis</p>
+        <p class="eyebrow" style="text-align:center;">Hasil Kuis</p>
         <div class="big" id="final-score">0/0</div>
         <div class="pct" id="final-pct">0%</div>
         <p class="msg" id="final-msg"></p>
         <p class="student-line" id="student-line"></p>
-        <p class="student-line" id="sheet-status" style="margin-top:4px;"></p>
+        <p class="student-line" id="sheet-status" style="margin-top:6px;"></p>
       </div>
       <div id="cat-breakdown"></div>
       <div class="review-toggle">
-        <button class="btn btn-ghost" id="btn-review">Lihat pembahasan jawaban</button>
+        <button class="btn btn-ghost" id="btn-review">Lihat Pembahasan Jawaban</button>
       </div>
       <div id="review-list"></div>
       <div class="result-actions">
@@ -405,10 +337,8 @@
       </div>
     </div>
   </div>
-
 </div>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxp6qxi7qMploeZ6pmCOUlIj_TenlHrO7_JQyhE5HMAQ_rkIrIOFIRl22UDbC4GmIEI/exec";
 
@@ -433,15 +363,16 @@ let studentToken = '';
 let timerInterval = null;
 let timeRemaining = 0;
 
-// Ambang batas persentase kata kunci cocok agar jawaban essay dianggap "benar" oleh sistem auto-koreksi.
-// Guru tetap bisa mengecek jawaban asli siswa lewat kolom "Detail Jawaban Siswa" di Rekap Nilai.
 const ESSAY_PASS_THRESHOLD = 60;
+
+function escapeHtml(str) {
+  return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
 
 function gradeEssayAnswer(studentText, keywordsStr){
   const keywords = (keywordsStr || '').split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
   const textLower = (studentText || '').trim().toLowerCase();
   if(keywords.length === 0){
-    // Tidak ada kata kunci diatur guru -> tidak bisa auto-nilai, dianggap perlu dicek manual (skor 0 sementara, tidak menggugurkan siswa).
     return { matched: 0, total: 0, pct: 0, noKeywords: true };
   }
   let matched = 0;
@@ -456,18 +387,26 @@ const screenResult = document.getElementById('screen-result');
 const loader = document.getElementById('loader');
 const loaderText = document.getElementById('loader-text');
 
+function switchScreen(targetScreen) {
+  [screenStart, screenQuiz, screenResult].forEach(s => {
+    if (s === targetScreen) {
+      s.classList.remove('hidden');
+    } else {
+      s.classList.add('hidden');
+    }
+  });
+}
+
 function generateId() {
   return 'q_' + Math.random().toString(36).substr(2, 9);
 }
 
-// ========================
-// 1. PENGAMBILAN DATA AWAL
-// ========================
+// 1. DATA LOADING
 function loadDataFromGoogle() {
   const cbName = 'getDataCb_' + Date.now();
   const timeoutId = setTimeout(() => {
     cleanup();
-    loaderText.innerHTML = '<span style="color:var(--rose);">Gagal terhubung ke Database. Pastikan URL Script benar dan ter-deploy "Anyone"</span>';
+    loaderText.innerHTML = '<span style="color:var(--rose);">Gagal terhubung ke Database. Pastikan koneksi internet stabil.</span>';
   }, 10000);
 
   function cleanup(){
@@ -477,12 +416,13 @@ function loadDataFromGoogle() {
 
   window[cbName] = function(data) {
     cleanup();
-    loader.classList.add('hidden'); screenStart.classList.remove('hidden');
+    loader.classList.add('hidden'); 
+    switchScreen(screenStart);
+
     if (data.title) { currentTitle = data.title; }
     currentTimer = data.timer;
     tokenSchedule = data.tokenSchedule || {};
     
-    // Injeksi ID agar fitur edit (2-way binding) aman
     QUESTIONS = (data.questions || []).map(q => ({
        ...q,
        category: q.category || 'Mata Pelajaran',
@@ -508,17 +448,16 @@ function loadDataFromGoogle() {
 
 loadDataFromGoogle();
 
-// 3. LOGIKA KUIS SISWA
-// ========================
+// 2. LOGIKA KUIS
 function sendProgressUpdate(statusMsg) {
-  if(!SCRIPT_URL || SCRIPT_URL.indexOf('PASTE') > -1) return;
+  if(!SCRIPT_URL) return;
   const params = new URLSearchParams();
   params.append('action', 'updateProgress'); params.append('nama', studentName); params.append('kelas', studentClass);
   params.append('jurusan', studentMajor); params.append('token', studentToken);
   params.append('progres', `${current} / ${sessionQuestions.length}`); params.append('skor', String(score));
   params.append('status', statusMsg || "Mengerjakan ⏳");
 
-  fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() }).catch(e => console.log('Silent fail update progress'));
+  fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() }).catch(() => {});
 }
 
 document.getElementById('btn-start').addEventListener('click', () => {
@@ -529,15 +468,14 @@ document.getElementById('btn-start').addEventListener('click', () => {
   const err = document.getElementById('id-error');
   
   if(!nama || !kelas || !jurusan || !token){ err.textContent = 'Semua form identitas dan kode token wajib diisi.'; return; }
-  if(QUESTIONS.length === 0){ err.textContent = 'Belum ada soal apapun di database. Hubungi guru.'; return; }
+  if(QUESTIONS.length === 0){ err.textContent = 'Belum ada soal di database. Hubungi guru.'; return; }
 
   const filteredQs = QUESTIONS.filter(q => q.token === token);
   if(filteredQs.length === 0){ err.textContent = 'Kode Token salah atau tidak ada soal untuk ujian tersebut.'; return; }
 
-  // VALIASI JADWAL DAN STATUS TOKEN
   const sched = tokenSchedule[token] || { status: 'aktif', tanggal: '', jamMulai: '', jamAkhir: '' };
   if (sched.status === 'nonaktif') {
-      err.textContent = 'Akses Ditolak: Ujian untuk token ini sedang dinonaktifkan oleh Guru/Admin.'; 
+      err.textContent = 'Akses Ditolak: Ujian dinonaktifkan oleh Guru/Admin.'; 
       return;
   }
   if (sched.tanggal) {
@@ -545,26 +483,23 @@ document.getElementById('btn-start').addEventListener('click', () => {
       const todayStr = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0') + "-" + String(now.getDate()).padStart(2, '0');
       if (sched.tanggal !== todayStr) {
           const tglParts = sched.tanggal.split('-');
-          const formattedTgl = `${tglParts[2]}/${tglParts[1]}/${tglParts[0]}`;
-          err.textContent = `Akses Ditolak: Ujian ini hanya berlaku dan dapat diakses pada tanggal ${formattedTgl}.`; 
+          err.textContent = `Akses Ditolak: Ujian ini hanya dapat diakses pada tanggal ${tglParts[2]}/${tglParts[1]}/${tglParts[0]}.`; 
           return;
       }
   }
-  // VALIDASI JAM MULAI & JAM AKHIR (format HH:MM)
   if (sched.jamMulai || sched.jamAkhir) {
       const nowT = new Date();
       const nowStr = String(nowT.getHours()).padStart(2, '0') + ":" + String(nowT.getMinutes()).padStart(2, '0');
       if (sched.jamMulai && nowStr < sched.jamMulai) {
-          err.textContent = `Akses Ditolak: Ujian belum dimulai. Ujian dibuka pukul ${sched.jamMulai}.`;
+          err.textContent = `Akses Ditolak: Ujian belum dimulai (dibuka pukul ${sched.jamMulai}).`;
           return;
       }
       if (sched.jamAkhir && nowStr > sched.jamAkhir) {
-          err.textContent = `Akses Ditolak: Waktu ujian sudah berakhir (ditutup pukul ${sched.jamAkhir}).`;
+          err.textContent = `Akses Ditolak: Ujian sudah berakhir (ditutup pukul ${sched.jamAkhir}).`;
           return;
       }
   }
 
-  // VALIDASI KELAS DAN JURUSAN
   const targetQ = filteredQs[0];
   if (targetQ.kelas && targetQ.kelas !== kelas) {
     err.textContent = `Akses Ditolak: Kode token ini khusus untuk Kelas ${targetQ.kelas}.`;
@@ -582,18 +517,39 @@ document.getElementById('btn-start').addEventListener('click', () => {
 function startQuiz(questionsToRun){
   clearInterval(timerInterval); current = 0; score = 0; answers = [];
   sessionQuestions = JSON.parse(JSON.stringify(questionsToRun));
-  for (let i = sessionQuestions.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [sessionQuestions[i], sessionQuestions[j]] = [sessionQuestions[j], sessionQuestions[i]]; }
+  
+  // Shuffle questions
+  for (let i = sessionQuestions.length - 1; i > 0; i--) { 
+    const j = Math.floor(Math.random() * (i + 1)); 
+    [sessionQuestions[i], sessionQuestions[j]] = [sessionQuestions[j], sessionQuestions[i]]; 
+  }
+  
+  // Shuffle options
   sessionQuestions.forEach(q => {
-    const correctAnswerText = q.options[q.correct];
-    for (let i = q.options.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q.options[i], q.options[j]] = [q.options[j], q.options[i]]; }
-    q.correct = q.options.indexOf(correctAnswerText);
+    if (q.type !== 'essay' && q.options) {
+      const correctAnswerText = q.options[q.correct];
+      for (let i = q.options.length - 1; i > 0; i--) { 
+        const j = Math.floor(Math.random() * (i + 1)); 
+        [q.options[i], q.options[j]] = [q.options[j], q.options[i]]; 
+      }
+      q.correct = q.options.indexOf(correctAnswerText);
+    }
   });
 
-  screenStart.classList.add('hidden'); screenQuiz.classList.remove('hidden'); screenResult.classList.add('hidden');
-  const ticks = document.getElementById('ruler-ticks'); ticks.innerHTML = '';
-  for(let i=0;i<sessionQuestions.length;i++){ const t = document.createElement('div'); t.className = 'tick'; ticks.appendChild(t); }
+  switchScreen(screenQuiz);
+  
+  const ticks = document.getElementById('ruler-ticks'); 
+  ticks.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  for(let i=0;i<sessionQuestions.length;i++){ 
+    const t = document.createElement('div'); 
+    t.className = 'tick'; 
+    frag.appendChild(t); 
+  }
+  ticks.appendChild(frag);
 
-  renderQuestion(); sendProgressUpdate("Mulai 🚀");
+  renderQuestion(); 
+  sendProgressUpdate("Mulai 🚀");
 }
 
 function lockEssayOnTimeout(q){
@@ -613,17 +569,29 @@ function lockEssayOnTimeout(q){
 
 function startQuestionTimer() {
   clearInterval(timerInterval);
-  const badge = document.getElementById('timer-badge'); const live = document.getElementById('timer-live');
+  const badge = document.getElementById('timer-badge'); 
+  const live = document.getElementById('timer-live');
   const q = sessionQuestions[current];
   const effectiveTimer = (q.customTimer !== undefined && q.customTimer !== null && String(q.customTimer).trim() !== '') ? parseInt(q.customTimer, 10) : currentTimer;
-  if (!effectiveTimer || effectiveTimer <= 0) { badge.classList.add('hidden'); return; }
+  
+  if (!effectiveTimer || effectiveTimer <= 0) { 
+    badge.classList.add('hidden'); 
+    return; 
+  }
 
-  badge.classList.remove('hidden'); badge.classList.remove('warning'); timeRemaining = effectiveTimer;
-  const updateUI = () => { const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0'); const s = (timeRemaining % 60).toString().padStart(2, '0'); live.textContent = `${m}:${s}`; };
+  badge.classList.remove('hidden', 'warning');
+  timeRemaining = effectiveTimer;
+  
+  const updateUI = () => { 
+    const m = Math.floor(timeRemaining / 60).toString().padStart(2, '0'); 
+    const s = (timeRemaining % 60).toString().padStart(2, '0'); 
+    live.textContent = `${m}:${s}`; 
+  };
   updateUI();
 
   timerInterval = setInterval(() => {
-    timeRemaining--; updateUI();
+    timeRemaining--; 
+    updateUI();
     if (timeRemaining <= 10) badge.classList.add('warning');
     if (timeRemaining <= 0) {
       clearInterval(timerInterval);
@@ -632,9 +600,14 @@ function startQuestionTimer() {
         if(qNow.type === 'essay'){
           lockEssayOnTimeout(qNow);
         } else {
-          locked = true; answers.push({selected: -1, correct: qNow.correct, isCorrect: false});
+          locked = true; 
+          answers.push({selected: -1, correct: qNow.correct, isCorrect: false});
           const allOpts = document.querySelectorAll('#options .opt');
-          allOpts.forEach((el, idx) => { el.classList.add('locked'); if(idx === qNow.correct) el.classList.add('correct'); else el.classList.add('dim'); });
+          allOpts.forEach((el, idx) => { 
+            el.classList.add('locked'); 
+            if(idx === qNow.correct) el.classList.add('correct'); 
+            else el.classList.add('dim'); 
+          });
           document.getElementById('btn-next').classList.add('show');
         }
       }
@@ -653,7 +626,8 @@ function showEssayFeedback(g, isCorrect, isTimeout){
 }
 
 function renderQuestion(){
-  locked = false; const q = sessionQuestions[current];
+  locked = false; 
+  const q = sessionQuestions[current];
   document.getElementById('qnum').textContent = `Soal ${current+1} / ${sessionQuestions.length}`;
   document.getElementById('qcat').textContent = q.category || 'Mata Pelajaran';
   document.getElementById('score-live').textContent = score;
@@ -663,9 +637,12 @@ function renderQuestion(){
   if(q.image){ imgEl.src = q.image; imgEl.classList.remove('hidden'); } else { imgEl.classList.add('hidden'); imgEl.removeAttribute('src'); }
 
   const pct = sessionQuestions.length > 1 ? (current / (sessionQuestions.length-1)) * 100 : 0;
-  document.getElementById('ruler-fill').style.width = pct + '%'; document.getElementById('ruler-head').style.left = pct + '%'; document.getElementById('ruler-head').textContent = current+1;
+  document.getElementById('ruler-fill').style.width = pct + '%'; 
+  document.getElementById('ruler-head').style.left = pct + '%'; 
+  document.getElementById('ruler-head').textContent = current+1;
 
-  const optsWrap = document.getElementById('options'); optsWrap.innerHTML = '';
+  const optsWrap = document.getElementById('options'); 
+  optsWrap.innerHTML = '';
 
   if(q.type === 'essay'){
     optsWrap.innerHTML = `
@@ -692,8 +669,10 @@ function renderQuestion(){
       document.getElementById('btn-next').classList.add('show');
     });
   } else {
+    const frag = document.createDocumentFragment();
     q.options.forEach((opt, i) => {
-      const btn = document.createElement('button'); btn.className = 'opt';
+      const btn = document.createElement('button'); 
+      btn.className = 'opt';
       btn.innerHTML = `<span class="letter">${LETTERS[i]}</span><span>${opt}</span>`;
       btn.addEventListener('click', () => {
         if(locked) return;
@@ -703,7 +682,7 @@ function renderQuestion(){
         answers.push({selected:i, correct:q.correct, isCorrect});
         document.getElementById('score-live').textContent = score;
 
-        const allOpts = document.querySelectorAll('#options .opt');
+        const allOpts = optsWrap.querySelectorAll('.opt');
         allOpts.forEach((el, idx) => {
           el.classList.add('locked');
           if(idx === q.correct) el.classList.add('correct');
@@ -712,12 +691,13 @@ function renderQuestion(){
         });
         document.getElementById('btn-next').classList.add('show');
       });
-      optsWrap.appendChild(btn);
+      frag.appendChild(btn);
     });
+    optsWrap.appendChild(frag);
   }
 
   document.getElementById('btn-next').classList.remove('show');
-  document.getElementById('btn-next').textContent = current === sessionQuestions.length-1 ? 'Lihat hasil →' : 'Lanjut →';
+  document.getElementById('btn-next').textContent = current === sessionQuestions.length-1 ? 'Lihat Hasil →' : 'Lanjut →';
   startQuestionTimer();
 }
 
@@ -728,17 +708,20 @@ document.getElementById('btn-next').addEventListener('click', () => {
 });
 
 function showResult(){
-  screenQuiz.classList.add('hidden'); screenResult.classList.remove('hidden');
+  switchScreen(screenResult);
 
   document.getElementById('final-score').textContent = `${score}/${sessionQuestions.length}`;
   const pct = Math.round((score/sessionQuestions.length)*100);
   document.getElementById('final-pct').textContent = `${pct}% benar`;
 
   let msg = '';
-  if(pct >= 90) msg = 'Luar biasa — Anda sangat menguasai materi ini!'; else if(pct >= 75) msg = 'Bagus — pemahaman sudah kuat, tinggal perdalam sedikit lagi.';
-  else if(pct >= 60) msg = 'Cukup baik — beberapa bagian masih perlu diulang kembali.'; else msg = 'Tetap semangat! Perlu belajar ulang materi ini.';
+  if(pct >= 90) msg = 'Luar biasa — Anda sangat menguasai materi ini!'; 
+  else if(pct >= 75) msg = 'Bagus — pemahaman sudah kuat, tinggal perdalam sedikit lagi.';
+  else if(pct >= 60) msg = 'Cukup baik — beberapa bagian masih perlu diulang kembali.'; 
+  else msg = 'Tetap semangat! Perlu belajar ulang materi ini.';
+  
   document.getElementById('final-msg').textContent = msg;
-  document.getElementById('student-line').innerHTML = `<b>${studentName}</b> — Kelas ${studentClass} (${studentMajor})`;
+  document.getElementById('student-line').innerHTML = `<b>${escapeHtml(studentName)}</b> — Kelas ${studentClass} (${studentMajor})`;
 
   const cats = {};
   sessionQuestions.forEach((q, idx) => {
@@ -749,14 +732,16 @@ function showResult(){
 
   submitToSheet(pct, cats);
 
-  const breakdown = document.getElementById('cat-breakdown'); breakdown.innerHTML = '';
+  const breakdown = document.getElementById('cat-breakdown'); 
+  breakdown.innerHTML = '';
   Object.keys(cats).forEach(cat => {
     const c = cats[cat]; const p = Math.round((c.correct/c.total)*100); const row = document.createElement('div'); row.className = 'cat-row';
-    row.innerHTML = `<div class="cat-label"><span>${cat}</span><span>${c.correct}/${c.total}</span></div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${p}%"></div></div>`;
+    row.innerHTML = `<div class="cat-label"><span>${escapeHtml(cat)}</span><span>${c.correct}/${c.total}</span></div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${p}%"></div></div>`;
     breakdown.appendChild(row);
   });
 
-  const reviewList = document.getElementById('review-list'); reviewList.innerHTML = '';
+  const reviewList = document.getElementById('review-list'); 
+  reviewList.innerHTML = '';
   sessionQuestions.forEach((q, idx) => {
     const a = answers[idx]; if(!a) return; const item = document.createElement('div'); item.className = 'review-item';
     let yourText = ''; let raClass = '';
@@ -769,19 +754,23 @@ function showResult(){
     else if (a.isCorrect) { yourText = `Jawaban kamu: ${LETTERS[a.selected]} (benar)`; raClass = 'right'; } 
     else { yourText = `Jawaban kamu: ${LETTERS[a.selected]} — Kunci: ${LETTERS[q.correct]}`; raClass = 'wrong'; }
 
-    item.innerHTML = `<p class="rq"><b>${idx+1}.</b> ${q.text}</p><p class="ra ${raClass}">${yourText}</p>`; reviewList.appendChild(item);
+    item.innerHTML = `<p class="rq"><b>${idx+1}.</b> ${escapeHtml(q.text)}</p><p class="ra ${raClass}">${yourText}</p>`; 
+    reviewList.appendChild(item);
   });
 }
 
 document.getElementById('btn-review').addEventListener('click', () => {
-  const el = document.getElementById('review-list'); el.classList.toggle('show');
-  document.getElementById('btn-review').textContent = el.classList.contains('show') ? 'Sembunyikan pembahasan jawaban' : 'Lihat pembahasan jawaban';
+  const el = document.getElementById('review-list'); 
+  el.classList.toggle('show');
+  document.getElementById('btn-review').textContent = el.classList.contains('show') ? 'Sembunyikan Pembahasan Jawaban' : 'Lihat Pembahasan Jawaban';
 });
 
 document.getElementById('btn-restart').addEventListener('click', () => { window.location.reload(); });
 
 function submitToSheet(pct, cats){
-  const statusEl = document.getElementById('sheet-status'); statusEl.textContent = 'Mengirim hasil ke server…';
+  const statusEl = document.getElementById('sheet-status'); 
+  statusEl.textContent = 'Mengirim hasil ke server…';
+  
   const detail = sessionQuestions.map((q, idx) => {
     const a = answers[idx]; if(!a) return `${idx+1}:-`;
     if(a.type === 'essay'){
@@ -799,48 +788,76 @@ function submitToSheet(pct, cats){
   params.append('detail', detail);
 
   fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() })
-  .then(res => res.text()).then(text => { statusEl.textContent = '✅ Tersimpan ke database guru.'; })
+  .then(res => res.text()).then(() => { statusEl.textContent = '✅ Tersimpan ke database guru.'; })
   .catch(() => { statusEl.textContent = '❌ Gagal terkirim. Unduh Excel dan kirim manual.'; });
 }
 
-// Download Hasil Pribadi Siswa
+// 3. LAZY LOADING XLSX SAAT DIBUTUHKAN
+function loadXLSX(callback) {
+  if (window.XLSX) return callback();
+  const btn = document.getElementById('btn-download');
+  const originalText = btn.textContent;
+  btn.textContent = 'Menyiapkan Excel...';
+  btn.disabled = true;
+
+  const script = document.createElement('script');
+  script.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+  script.onload = () => {
+    btn.textContent = originalText;
+    btn.disabled = false;
+    callback();
+  };
+  script.onerror = () => {
+    btn.textContent = originalText;
+    btn.disabled = false;
+    alert('Gagal memuat pustaka Excel. Periksa koneksi internet Anda.');
+  };
+  document.head.appendChild(script);
+}
+
 document.getElementById('btn-download').addEventListener('click', () => {
-  const pct = Math.round((score/sessionQuestions.length)*100); const now = new Date(); const tanggal = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
+  loadXLSX(() => {
+    const pct = Math.round((score/sessionQuestions.length)*100); 
+    const now = new Date(); 
+    const tanggal = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
 
-  const ringkasan = [
-    ['Nama', studentName], ['Kelas', studentClass], ['Jurusan', studentMajor],
-    ['Tanggal pengerjaan', tanggal], ['Skor', `${score}/${sessionQuestions.length}`], ['Persentase benar', `${pct}%`], []
-  ];
+    const ringkasan = [
+      ['Nama', studentName], ['Kelas', studentClass], ['Jurusan', studentMajor],
+      ['Tanggal pengerjaan', tanggal], ['Skor', `${score}/${sessionQuestions.length}`], ['Persentase benar', `${pct}%`], []
+    ];
 
-  const cats = {};
-  sessionQuestions.forEach((q, idx) => {
-    const cat = q.category || 'Mata Pelajaran'; if(!cats[cat]) cats[cat] = {correct:0, total:0}; cats[cat].total++;
-    if(answers[idx] && answers[idx].isCorrect) cats[cat].correct++;
+    const cats = {};
+    sessionQuestions.forEach((q, idx) => {
+      const cat = q.category || 'Mata Pelajaran'; if(!cats[cat]) cats[cat] = {correct:0, total:0}; cats[cat].total++;
+      if(answers[idx] && answers[idx].isCorrect) cats[cat].correct++;
+    });
+    ringkasan.push(['Mata Pelajaran', 'Benar', 'Total']);
+    Object.keys(cats).forEach(cat => ringkasan.push([cat, cats[cat].correct, cats[cat].total]));
+
+    const detail = [['No', 'Mata Pelajaran', 'Soal', 'Jawaban siswa', 'Kunci jawaban', 'Hasil']];
+    sessionQuestions.forEach((q, idx) => {
+      const a = answers[idx]; if(!a) return;
+      if(a.type === 'essay'){
+        const hasilEssay = a.noKeywords ? 'Menunggu penilaian guru' : `Auto ${a.autoScore}% (${a.isCorrect ? 'Sementara Benar' : 'Sementara Belum Tepat'})`;
+        detail.push([idx+1, q.category || 'Mata Pelajaran', q.text, a.text || '(tidak dijawab)', q.idealAnswer || '(cek guru)', hasilEssay]);
+        return;
+      }
+      const studentAnsText = a.selected === -1 ? 'Waktu Habis' : LETTERS[a.selected]; 
+      const isAnsCorrect = a.isCorrect ? 'Benar' : (a.selected === -1 ? 'Habis Waktu' : 'Salah');
+      detail.push([idx+1, q.category || 'Mata Pelajaran', q.text, studentAnsText, LETTERS[q.correct], isAnsCorrect]);
+    });
+
+    const wb = XLSX.utils.book_new(); 
+    const wsRingkasan = XLSX.utils.aoa_to_sheet(ringkasan); 
+    wsRingkasan['!cols'] = [{wch:20},{wch:14},{wch:10}];
+    const wsDetail = XLSX.utils.aoa_to_sheet(detail); 
+    wsDetail['!cols'] = [{wch:5},{wch:14},{wch:60},{wch:16},{wch:14},{wch:15}];
+
+    XLSX.utils.book_append_sheet(wb, wsRingkasan, 'Ringkasan'); 
+    XLSX.utils.book_append_sheet(wb, wsDetail, 'Detail Jawaban');
+    XLSX.writeFile(wb, `Hasil_Kuis_${studentName.replace(/[^a-z0-9]+/gi, '_')}_${studentClass}.xlsx`);
   });
-  ringkasan.push(['Mata Pelajaran', 'Benar', 'Total']);
-  Object.keys(cats).forEach(cat => ringkasan.push([cat, cats[cat].correct, cats[cat].total]));
-
-  const detail = [['No', 'Mata Pelajaran', 'Soal', 'Jawaban siswa', 'Kunci jawaban', 'Hasil']];
-  sessionQuestions.forEach((q, idx) => {
-    const a = answers[idx]; if(!a) return;
-    if(a.type === 'essay'){
-      const hasilEssay = a.noKeywords ? 'Menunggu penilaian guru' : `Auto ${a.autoScore}% (${a.isCorrect ? 'Sementara Benar' : 'Sementara Belum Tepat'})`;
-      detail.push([idx+1, q.category || 'Mata Pelajaran', q.text, a.text || '(tidak dijawab)', q.idealAnswer || '(cek guru)', hasilEssay]);
-      return;
-    }
-    const studentAnsText = a.selected === -1 ? 'Waktu Habis' : LETTERS[a.selected]; 
-    const isAnsCorrect = a.isCorrect ? 'Benar' : (a.selected === -1 ? 'Habis Waktu' : 'Salah');
-    detail.push([idx+1, q.category || 'Mata Pelajaran', q.text, studentAnsText, LETTERS[q.correct], isAnsCorrect]);
-  });
-
-  const wb = XLSX.utils.book_new(); const wsRingkasan = XLSX.utils.aoa_to_sheet(ringkasan); wsRingkasan['!cols'] = [{wch:20},{wch:14},{wch:10}];
-  const wsDetail = XLSX.utils.aoa_to_sheet(detail); wsDetail['!cols'] = [{wch:5},{wch:14},{wch:60},{wch:16},{wch:14},{wch:15}];
-
-  XLSX.utils.book_append_sheet(wb, wsRingkasan, 'Ringkasan'); XLSX.utils.book_append_sheet(wb, wsDetail, 'Detail Jawaban');
-  XLSX.writeFile(wb, `Hasil_Kuis_${studentName.replace(/[^a-z0-9]+/gi, '_')}_${studentClass}.xlsx`);
 });
-
-// ========================
 </script>
 </body>
 </html>
