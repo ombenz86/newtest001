@@ -29,7 +29,8 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .bar small{color:var(--muted)}
 .timer{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;padding:6px 12px;border-radius:10px;background:var(--bg)}
 .timer.warn{color:var(--err)}
-iframe{width:100%;height:70vh;border:1px solid var(--border);border-radius:10px;background:#fff}
+/* Tinggi iframe disesuaikan agar lebih proporsional di HP */
+iframe{width:100%;height:75vh;border:none;border-radius:10px;background:#fff}
 .sm{display:block;text-align:center;margin-top:10px;font-size:.82rem;color:var(--muted);text-decoration:none}
 .sm:hover{text-decoration:underline}
 .row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:.95rem}
@@ -70,7 +71,7 @@ iframe{width:100%;height:70vh;border:1px solid var(--border);border-radius:10px;
     </div>
     <iframe id="frame" title="Soal ulangan" referrerpolicy="no-referrer"></iframe>
     <div class="msg" id="lock"></div>
-    <a class="sm" id="tab" href="#" target="_blank" rel="noopener">Form tidak tampil? Buka di tab baru</a>
+    <a class="sm" id="tab" href="#" target="_blank" rel="noopener">Pastikan "Batasi 1 Tanggapan" di Google Form dimatikan</a>
   </section>
 </main>
 
@@ -81,7 +82,6 @@ const tampilPesan = t => getEl("pesanLogin").textContent = t || "";
 let session = null;
 let tick = null;
 
-/* ---------- Ambil nilai dari server ---------- */
 function ambil(r, names){
   for(const n of names){
     if(r[n] !== undefined && r[n] !== null && String(r[n]).trim() !== "") return r[n];
@@ -95,7 +95,6 @@ function ambil(r, names){
   return "";
 }
 
-/* ---------- Normalisasi format tanggal ---------- */
 function normalisasiTanggal(v){
   v = String(v == null ? "" : v).trim();
   if(!v) return "";
@@ -160,13 +159,6 @@ async function prosesMasuk(){
       w.textContent = "Tanggal tidak diterima dari server. Versi script: " + (r.versi || "lama (belum v3)") +
         ". Field diterima: " + Object.keys(r).join(", ");
       getEl("detail").appendChild(w);
-    }
-
-    if(/[?&]debug=1/.test(location.search)){
-      const pre = document.createElement("pre");
-      pre.style.cssText = "white-space:pre-wrap;word-break:break-all;font-size:.75rem;margin:10px 0 0;color:var(--muted)";
-      pre.textContent = "DATA DARI SERVER:\n" + raw;
-      getEl("detail").appendChild(pre);
     }
 
     getEl("login").classList.add("hidden");
@@ -263,35 +255,10 @@ function mulaiUjian(){
 
   const finalLink = String(r.link).trim();
   
-  /* --- KODE MODIFIKASI: DETEKSI HP --- */
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent) || (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) || window.innerWidth < 768;
-  
-  if (isMobile) {
-    // Sembunyikan iframe
-    getEl("frame").classList.add("hidden");
-    
-    // Ubah tampilan teks kecil menjadi tombol tebal
-    const btnTab = getEl("tab");
-    btnTab.textContent = "Buka Soal Sekarang (Tab Baru)";
-    btnTab.style.display = "block";
-    btnTab.style.padding = "14px";
-    btnTab.style.marginTop = "20px";
-    btnTab.style.background = "var(--primary)";
-    btnTab.style.color = "var(--primary-t)";
-    btnTab.style.borderRadius = "10px";
-    btnTab.style.fontWeight = "bold";
-    btnTab.style.textDecoration = "none";
-    btnTab.href = finalLink;
-    
-    // Buka di tab yang sama (tab baru sering diblokir di HP)
-    btnTab.target = "_self";
-    btnTab.onclick = function(e){ e.preventDefault(); location.href = finalLink; };
-  } else {
-    // Eksekusi normal untuk laptop/PC
-    getEl("frame").src = toEmbed(finalLink);
-    getEl("tab").href = finalLink;
-  }
-  /* --- BATAS KODE MODIFIKASI --- */
+  // Memaksa area frame soal untuk selalu terbuka terlepas dari jenis perangkat (HP/PC)
+  const areaFrame = getEl("frame");
+  areaFrame.src = toEmbed(finalLink);
+  areaFrame.classList.remove("hidden"); // Memastikan iframe tidak disembunyikan
 
   if(dl === null){ getEl("timer").textContent = "Tanpa batas"; return; }
 
